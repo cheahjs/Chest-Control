@@ -129,9 +129,10 @@ namespace ChestControl
                         var id = Terraria.Chest.FindChest(x, y);
                         if (id != -1)
                         {
-                            if (ChestManager.Chests[id].Owner != "")
+                            if (ChestManager.Chests[id].Owner != "" && TShock.Players[e.Msg.whoAmI].Name.ToLower() != ChestManager.Chests[id].Owner && !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests"))
                             {
                                 TShock.Players[e.Msg.whoAmI].SendMessage("This chest is protected!", Microsoft.Xna.Framework.Color.Red);
+                                TShock.Players[e.Msg.whoAmI].SendTileSquare(x, y);
                                 e.Handled = true;
                             }
                         }
