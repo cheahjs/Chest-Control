@@ -90,7 +90,7 @@ namespace ChestControl
                             var id = Terraria.Chest.FindChest(x, y);
                             if (id != -1)
                             {
-                                if (ChestManager.Chests[id].Owner != "" && ChestManager.Chests[id].Owner.ToLower() != Main.player[e.Msg.whoAmI].name.ToLower() && !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests"))
+                                if (ChestManager.Chests[id].Owner != "" && ChestManager.Chests[id].Owner.ToLower() != TShock.Players[e.Msg.whoAmI].Name.ToLower() && !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests"))
                                 {
                                     e.Handled = true;
                                     TShock.Players[e.Msg.whoAmI].SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
@@ -107,6 +107,33 @@ namespace ChestControl
                                 }
                             }
                                 
+                        }
+                    }
+                    break;
+                case PacketTypes.TileKill:
+                case PacketTypes.Tile:
+                    using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
+                    {
+                        BinaryReader reader = new BinaryReader(data);
+                        int x;
+                        int y;
+                        if (e.MsgID == PacketTypes.Tile)
+                        {
+                            var type = reader.ReadByte();
+                            if (!(type == 0 || type == 4))
+                                return;
+                        }
+                        x = reader.ReadInt32();
+                        y = reader.ReadInt32();
+                        reader.Close();
+                        var id = Terraria.Chest.FindChest(x, y);
+                        if (id != -1)
+                        {
+                            if (ChestManager.Chests[id].Owner != "")
+                            {
+                                TShock.Players[e.Msg.whoAmI].SendMessage("This chest is protected!", Microsoft.Xna.Framework.Color.Red);
+                                e.Handled = true;
+                            }
                         }
                     }
                     break;
