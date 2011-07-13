@@ -121,6 +121,7 @@ namespace ChestControl
                                     }
                                     else
                                         player.SendMessage("This chest isn't protected!", Color.Red);
+                                    Players[e.Msg.whoAmI].State = SettingState.None;
                                 }
                             }
                                 
