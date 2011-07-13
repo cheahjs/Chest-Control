@@ -90,7 +90,7 @@ namespace ChestControl
                             var id = Terraria.Chest.FindChest(x, y);
                             if (id != -1)
                             {
-                                if (ChestManager.Chests[id].Owner != "" && ChestManager.Chests[id].Owner.ToLower() != TShock.Players[e.Msg.whoAmI].Name.ToLower() && !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests"))
+                                if (ChestManager.Chests[id].Owner != "" && ChestManager.Chests[id].Owner.ToLower() != TShock.Players[e.Msg.whoAmI].Name.ToLower() && !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests") && TShock.Regions.InProtectedArea(x, y, GetPlayerIP(TShock.Players[e.Msg.whoAmI].Name)))
                                 {
                                     e.Handled = true;
                                     TShock.Players[e.Msg.whoAmI].SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
@@ -129,7 +129,7 @@ namespace ChestControl
                         var id = Terraria.Chest.FindChest(x, y);
                         if (id != -1)
                         {
-                            if (ChestManager.Chests[id].Owner != "" && TShock.Players[e.Msg.whoAmI].Name.ToLower() != ChestManager.Chests[id].Owner && !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests"))
+                            if (ChestManager.Chests[id].Owner != "" && TShock.Players[e.Msg.whoAmI].Name.ToLower() != ChestManager.Chests[id].Owner && !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests") && TShock.Regions.InProtectedArea(x, y, GetPlayerIP(TShock.Players[e.Msg.whoAmI].Name)))
                             {
                                 TShock.Players[e.Msg.whoAmI].SendMessage("This chest is protected!", Microsoft.Xna.Framework.Color.Red);
                                 TShock.Players[e.Msg.whoAmI].SendTileSquare(x, y);
@@ -141,6 +141,21 @@ namespace ChestControl
                 default:
                     break;
             }
+        }
+
+        public static string GetPlayerIP(string playername)
+        {
+            foreach (TSPlayer player in TShock.Players)
+            {
+                if (player != null && player.Active)
+                {
+                    if (playername.ToLower() == player.Name.ToLower())
+                    {
+                        return player.IP;
+                    }
+                }
+            }
+            return null;
         }
     }
 }

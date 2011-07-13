@@ -15,16 +15,16 @@ namespace ChestControl
 
         public static void Load()
         {
-            if (!File.Exists(Path.Combine(TShock.SavePath + "\\chestcontrol\\" + Main.worldID + ".txt")))
+            if (!File.Exists(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt")))
             {
-                Directory.CreateDirectory(Path.Combine(TShock.SavePath + "\\chestcontrol\\"));
-                File.Create(Path.Combine(TShock.SavePath + "\\chestcontrol\\" + Main.worldID + ".txt")).Close();
+                Directory.CreateDirectory(Path.Combine(TShock.SavePath, "\\chestcontrol\\"));
+                File.Create(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt")).Close();
             }
 
             for (int i = 0; i < Chests.Length; i++)
                 Chests[i] = new Chest();
 
-            foreach (var line in File.ReadAllLines(Path.Combine(TShock.SavePath + "\\chestcontrol\\" + Main.worldID + ".txt")))
+            foreach (var line in File.ReadAllLines(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt")))
             {
                 var args = line.Split('|');
                 if (args.Length < 3)
@@ -47,7 +47,7 @@ namespace ChestControl
                 if (chest.Owner != "")
                     lines.Add(string.Format("{0}|{1},{2}|{3}", chest.ID, chest.Position.X, chest.Position.Y, chest.Owner));
             }
-            File.WriteAllLines(TShock.SavePath + "\\chestcontrol\\" + Main.worldID + ".txt", lines.ToArray());
+            File.WriteAllLines(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt"), lines.ToArray());
         }
     }
 }
