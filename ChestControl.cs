@@ -8,6 +8,7 @@ using TerrariaAPI.Hooks;
 using TShockAPI;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace ChestControl
 {
@@ -100,14 +101,26 @@ namespace ChestControl
                                     player.SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
                                     return;
                                 }
-                                if (Players[e.Msg.whoAmI].Setting)
+                                if (Players[e.Msg.whoAmI].State == SettingState.Setting)
                                 {
                                     ChestManager.Chests[id].Owner = player.Name;
                                     ChestManager.Chests[id].Position = new Microsoft.Xna.Framework.Vector2(x, y);
                                     ChestManager.Chests[id].ID = id;
                                     player.SendMessage("This chest is now yours, and yours only.", Microsoft.Xna.Framework.Color.Red);
-                                    Players[e.Msg.whoAmI].Setting = false;
+                                    Players[e.Msg.whoAmI].State = SettingState.None;
                                     ChestManager.Save();
+                                }
+                                if (Players[e.Msg.whoAmI].State == SettingState.Deleting)
+                                {
+                                    if ((ChestManager.Chests[id].Owner != "" && 
+                                        ChestManager.Chests[id].Owner.ToLower() == player.Name.ToLower()) ||
+                                        player.Group.HasPermission("removechestprotection"))
+                                    {
+                                        ChestManager.Chests[id] = new Chest();
+                                        player.SendMessage("This chest is no longer protected!", Color.Red);
+                                    }
+                                    else
+                                        player.SendMessage("This chest isn't protected!", Color.Red);
                                 }
                             }
                                 

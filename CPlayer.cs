@@ -8,11 +8,18 @@ namespace ChestControl
 {
     public class CPlayer : TSPlayer
     {
-        public bool Setting = false;
+        public SettingState State = SettingState.None;
 
         public CPlayer(int index)
             : base(index)
         {
         }
+    }
+
+    public enum SettingState
+    {
+        None,
+        Setting,
+        Deleting
     }
 }
