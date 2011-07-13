@@ -83,29 +83,29 @@ namespace ChestControl
                         using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
                         {
                             BinaryReader reader = new BinaryReader(data);
-                            //var id = reader.ReadInt16();
                             var x = reader.ReadInt32();
                             var y = reader.ReadInt32();
                             reader.Close();
                             var id = Terraria.Chest.FindChest(x, y);
+                            var player = TShock.Players[e.Msg.whoAmI];
                             if (id != -1)
                             {
-                                if ((ChestManager.Chests[id].Owner != "" && 
-                                    ChestManager.Chests[id].Owner.ToLower() != TShock.Players[e.Msg.whoAmI].Name.ToLower() &&
-                                    !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests")) || 
-                                    TShock.Regions.InProtectedArea(x, y, GetPlayerIP(TShock.Players[e.Msg.whoAmI].Name)) ||
-                                    !TShock.Players[e.Msg.whoAmI].IsLoggedIn)
+                                if (!player.Group.HasPermission("openallchests") &&
+                                    ((ChestManager.Chests[id].Owner != "" &&
+                                    ChestManager.Chests[id].Owner.ToLower() != player.Name.ToLower()) ||
+                                    TShock.Regions.InProtectedArea(x, y, GetPlayerIP(player.Name)) ||
+                                    !player.IsLoggedIn))
                                 {
                                     e.Handled = true;
-                                    TShock.Players[e.Msg.whoAmI].SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
+                                    player.SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
                                     return;
                                 }
                                 if (Players[e.Msg.whoAmI].Setting)
                                 {
-                                    ChestManager.Chests[id].Owner = TShock.Players[e.Msg.whoAmI].Name;
+                                    ChestManager.Chests[id].Owner = player.Name;
                                     ChestManager.Chests[id].Position = new Microsoft.Xna.Framework.Vector2(x, y);
                                     ChestManager.Chests[id].ID = id;
-                                    TShock.Players[e.Msg.whoAmI].SendMessage("This chest is now yours, and yours only.", Microsoft.Xna.Framework.Color.Red);
+                                    player.SendMessage("This chest is now yours, and yours only.", Microsoft.Xna.Framework.Color.Red);
                                     Players[e.Msg.whoAmI].Setting = false;
                                     ChestManager.Save();
                                 }
@@ -131,16 +131,17 @@ namespace ChestControl
                         y = reader.ReadInt32();
                         reader.Close();
                         var id = Terraria.Chest.FindChest(x, y);
+                        var player = TShock.Players[e.Msg.whoAmI];
                         if (id != -1)
                         {
-                            if ((ChestManager.Chests[id].Owner != "" && 
-                                TShock.Players[e.Msg.whoAmI].Name.ToLower() != ChestManager.Chests[id].Owner && 
-                                !TShock.Players[e.Msg.whoAmI].Group.HasPermission("openallchests")) || 
-                                TShock.Regions.InProtectedArea(x, y, GetPlayerIP(TShock.Players[e.Msg.whoAmI].Name)) ||
-                                !TShock.Players[e.Msg.whoAmI].IsLoggedIn)
+                            if (!player.Group.HasPermission("openallchests") &&
+                                    ((ChestManager.Chests[id].Owner != "" &&
+                                    ChestManager.Chests[id].Owner.ToLower() != player.Name.ToLower()) ||
+                                    TShock.Regions.InProtectedArea(x, y, GetPlayerIP(player.Name)) ||
+                                    !player.IsLoggedIn))
                             {
-                                TShock.Players[e.Msg.whoAmI].SendMessage("This chest is protected!", Microsoft.Xna.Framework.Color.Red);
-                                TShock.Players[e.Msg.whoAmI].SendTileSquare(x, y);
+                                player.SendMessage("This chest is protected!", Microsoft.Xna.Framework.Color.Red);
+                                player.SendTileSquare(x, y);
                                 e.Handled = true;
                             }
                         }
