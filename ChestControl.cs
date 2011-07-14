@@ -91,10 +91,10 @@ namespace ChestControl
                             var player = TShock.Players[e.Msg.whoAmI];
                             if (id != -1)
                             {
-                                if (!player.Group.HasPermission("openallchests") &&
+                                    if (!player.Group.HasPermission("openallchests") &&
                                     ((ChestManager.Chests[id].Owner != "" &&
                                     ChestManager.Chests[id].Owner.ToLower() != player.Name.ToLower()) ||
-                                    TShock.Regions.InProtectedArea(x, y, GetPlayerIP(player.Name)) ||
+                                    !TShock.Regions.CanBuild(x, y, player) ||
                                     !player.IsLoggedIn))
                                 {
                                     e.Handled = true;
@@ -151,7 +151,7 @@ namespace ChestControl
                             if (!player.Group.HasPermission("openallchests") &&
                                     ((ChestManager.Chests[id].Owner != "" &&
                                     ChestManager.Chests[id].Owner.ToLower() != player.Name.ToLower()) ||
-                                    TShock.Regions.InProtectedArea(x, y, GetPlayerIP(player.Name)) ||
+                                    !TShock.Regions.CanBuild(x, y, player) ||
                                     !player.IsLoggedIn))
                             {
                                 player.SendMessage("This chest is protected!", Microsoft.Xna.Framework.Color.Red);
