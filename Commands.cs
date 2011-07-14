@@ -12,6 +12,7 @@ namespace ChestControl
         {
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", Set, "cset", "setchest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", UnSet, "cunset", "unsetchest"));
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", CancelSet, "ccset", "ccunset", "cancelsetchest", "cancelunsetchest"));
         }
 
         private static void Set(CommandArgs args)
@@ -24,6 +25,12 @@ namespace ChestControl
         {
             ChestControl.Players[args.Player.Index].State = SettingState.Deleting;
             args.Player.SendMessage("Open a chest to delete it's protection.", Microsoft.Xna.Framework.Color.BlueViolet);
+        }
+
+        private static void CancelSet(CommandArgs args)
+        {
+            ChestControl.Players[args.Player.Index].State = SettingState.None;
+            args.Player.SendMessage("Setting/Unsetting of chest protection canceled.", Microsoft.Xna.Framework.Color.BlueViolet);
         }
     }
 }
