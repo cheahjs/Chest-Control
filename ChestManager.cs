@@ -11,31 +11,64 @@ namespace ChestControl
 {
     class ChestManager
     {
-        public static Chest[] Chests = new Chest[Main.maxChests];
+        private static Chest[] Chests = new Chest[Main.maxChests];
+        private static string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
+        private static string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
+
+
+        public static Chest getChest(int id)
+        {
+            return Chests[id];
+        }
 
         public static void Load()
         {
-            if (!File.Exists(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt")))
+            if (!Directory.Exists(ChestControlDirectory))
             {
-                Directory.CreateDirectory(Path.Combine(TShock.SavePath, "\\chestcontrol\\"));
-                File.Create(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt")).Close();
+                Directory.CreateDirectory(ChestControlDirectory);
+            }
+
+            if (!File.Exists(ChestSavePath))
+            {
+                File.Create(ChestSavePath).Close();
             }
 
             for (int i = 0; i < Chests.Length; i++)
                 Chests[i] = new Chest();
 
-            foreach (var line in File.ReadAllLines(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt")))
+            var error = false;
+            foreach (var line in File.ReadAllLines(ChestSavePath))
             {
                 var args = line.Split('|');
-                if (args.Length < 3)
+                if (args.Length < 6)
+                {
                     continue;
+                }
                 try
                 {
-                    Chests[int.Parse(args[0])].Position = new Vector2(int.Parse(args[1]), int.Parse(args[2]));
-                    Chests[int.Parse(args[0])].Owner = string.Join("|", args, 3, args.Length - 2);
-                    Chests[int.Parse(args[0])].ID = int.Parse(args[0]);
+                    var chest = Chests[int.Parse(args[0])];
+
+                    chest.setPosition(new Vector2(int.Parse(args[1]), int.Parse(args[2])));
+                    chest.setOwner(args[3]);
+                    chest.setID(int.Parse(args[0]));
+                    if (bool.Parse(args[4]))
+                    {
+                        chest.Lock();
+                    }
+                    if (bool.Parse(args[5]))
+                    {
+                        chest.regionLock(true);
+                    }
                 }
-                catch { }
+                catch
+                {
+                    error = true;
+                }
+            }
+
+            if (error)
+            {
+                Console.WriteLine("Failed to load some chests data, corresponding chests will be left unprotected.");
             }
         }
 
@@ -44,10 +77,12 @@ namespace ChestControl
             var lines = new List<string>();
             foreach (var chest in Chests)
             {
-                if (chest.Owner != "")
-                    lines.Add(string.Format("{0}|{1},{2}|{3}", chest.ID, chest.Position.X, chest.Position.Y, chest.Owner));
+                if (chest.getOwner() != "")
+                {
+                    lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}", chest.getID(), chest.getPosition().X, chest.getPosition().Y, chest.getOwner(), chest.isLocked(), chest.isRegionLocked()));
+                }
             }
-            File.WriteAllLines(Path.Combine(TShock.SavePath, "\\chestcontrol\\" + Main.worldID + ".txt"), lines.ToArray());
+            File.WriteAllLines(ChestSavePath, lines.ToArray());
         }
     }
 }

@@ -34,7 +34,7 @@ namespace ChestControl
 
         public override string Author
         {
-            get { return "Deathmax"; }
+            get { return "Deathmax,Natrim"; }
         }
 
         public override string Description
@@ -64,8 +64,11 @@ namespace ChestControl
                 ChestManager.Load();
                 Commands.Load();
                 for (int i = 0; i < Players.Length; i++)
+                {
                     Players[i] = new CPlayer(i);
+                }
                 Init = true;
+                Console.WriteLine("ChestControl initiated.");
             }
         }
 
@@ -88,43 +91,98 @@ namespace ChestControl
                             var y = reader.ReadInt32();
                             reader.Close();
                             var id = Terraria.Chest.FindChest(x, y);
-                            var player = TShock.Players[e.Msg.whoAmI];
+                            var player = Players[e.Msg.whoAmI];
                             if (id != -1)
                             {
-                                    if (!player.Group.HasPermission("openallchests") &&
-                                    ((ChestManager.Chests[id].Owner != "" &&
-                                    ChestManager.Chests[id].Owner.ToLower() != player.Name.ToLower()) ||
-                                    !TShock.Regions.CanBuild(x, y, player) ||
-                                    !player.IsLoggedIn))
+                                var chest = ChestManager.getChest(id);
+
+                                if (!player.Group.HasPermission("openallchests") && !chest.isOpenFor(player))
                                 {
                                     e.Handled = true;
                                     player.SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
                                     return;
                                 }
-                                if (Players[e.Msg.whoAmI].State == SettingState.Setting)
+
+                                if (chest.isLocked())
                                 {
-                                    ChestManager.Chests[id].Owner = player.Name;
-                                    ChestManager.Chests[id].Position = new Microsoft.Xna.Framework.Vector2(x, y);
-                                    ChestManager.Chests[id].ID = id;
-                                    player.SendMessage("This chest is now yours, and yours only.", Microsoft.Xna.Framework.Color.Red);
-                                    Players[e.Msg.whoAmI].State = SettingState.None;
-                                    ChestManager.Save();
-                                }
-                                if (Players[e.Msg.whoAmI].State == SettingState.Deleting)
-                                {
-                                    if ((ChestManager.Chests[id].Owner != "" && 
-                                        ChestManager.Chests[id].Owner.ToLower() == player.Name.ToLower()) ||
-                                        player.Group.HasPermission("removechestprotection"))
+                                    if (player.getState() == SettingState.Deleting)
                                     {
-                                        ChestManager.Chests[id] = new Chest();
-                                        player.SendMessage("This chest is no longer protected!", Color.Red);
+                                        if (chest.isOwner(player) || player.Group.HasPermission("removechestprotection"))
+                                        {
+                                            chest.UnLock();
+                                            player.SendMessage("This chest is no longer protected!", Color.Red);
+                                            ChestManager.Save();
+                                        }
+                                        else
+                                        {
+                                            player.SendMessage("This chest isn't yours!", Color.Red);
+                                        }
+                                        player.setState(SettingState.None);
                                     }
-                                    else
-                                        player.SendMessage("This chest isn't protected!", Color.Red);
-                                    Players[e.Msg.whoAmI].State = SettingState.None;
+                                    if (player.getState() == SettingState.RegionSetting)
+                                    {
+                                        if (chest.isOwner(player))
+                                        {
+                                            if (TShock.Regions.InArea(x, y))
+                                            {
+                                                chest.regionLock(true);
+
+                                                player.SendMessage("This chest is now shared between region users.", Microsoft.Xna.Framework.Color.Red);
+                                                ChestManager.Save();
+                                            }
+                                            else
+                                            {
+                                                player.SendMessage("You can region share chest only if the chest is inside region!", Color.Red);
+                                                player.setState(SettingState.None);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            player.SendMessage("This chest isn't yours!", Color.Red);
+                                        }
+                                        player.setState(SettingState.None);
+                                    }
+                                }
+                                else
+                                {
+                                    if (player.getState() == SettingState.RegionSetting)
+                                    {
+
+                                        if (TShock.Regions.InArea(x, y))
+                                        {
+                                            chest.setID(id);
+                                            chest.setPosition(x, y);
+                                            chest.setOwner(player);
+                                            chest.Lock();
+                                            chest.regionLock(true);
+
+                                            player.SendMessage("This chest is now shared between region users with you as owner.", Microsoft.Xna.Framework.Color.Red);
+                                            player.setState(SettingState.None);
+
+                                            ChestManager.Save();
+                                        }
+                                        else
+                                        {
+                                            player.SendMessage("You can region share chest only if the chest is inside region!", Color.Red);
+                                            player.setState(SettingState.None);
+                                        }
+                                    }
+                                    if (player.getState() == SettingState.Setting)
+                                    {
+                                        chest.setID(id);
+                                        chest.setPosition(x, y);
+                                        chest.setOwner(player);
+                                        chest.Lock();
+
+                                        player.SendMessage("This chest is now yours, and yours only.", Microsoft.Xna.Framework.Color.Red);
+                                        player.setState(SettingState.None);
+
+                                        ChestManager.Save();
+                                    }
+
                                 }
                             }
-                                
+
                         }
                     }
                     break;
@@ -145,14 +203,12 @@ namespace ChestControl
                         y = reader.ReadInt32();
                         reader.Close();
                         var id = Terraria.Chest.FindChest(x, y);
-                        var player = TShock.Players[e.Msg.whoAmI];
+                        var player = Players[e.Msg.whoAmI];
                         if (id != -1)
                         {
-                            if (!player.Group.HasPermission("openallchests") &&
-                                    ((ChestManager.Chests[id].Owner != "" &&
-                                    ChestManager.Chests[id].Owner.ToLower() != player.Name.ToLower()) ||
-                                    !TShock.Regions.CanBuild(x, y, player) ||
-                                    !player.IsLoggedIn))
+
+                            var chest = ChestManager.getChest(id);
+                            if (!player.Group.HasPermission("openallchests") && !chest.isOpenFor(player))
                             {
                                 player.SendMessage("This chest is protected!", Microsoft.Xna.Framework.Color.Red);
                                 player.SendTileSquare(x, y);
@@ -164,21 +220,6 @@ namespace ChestControl
                 default:
                     break;
             }
-        }
-
-        public static string GetPlayerIP(string playername)
-        {
-            foreach (TSPlayer player in TShock.Players)
-            {
-                if (player != null && player.Active)
-                {
-                    if (playername.ToLower() == player.Name.ToLower())
-                    {
-                        return player.IP;
-                    }
-                }
-            }
-            return null;
         }
     }
 }

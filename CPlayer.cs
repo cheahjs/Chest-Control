@@ -8,11 +8,22 @@ namespace ChestControl
 {
     public class CPlayer : TSPlayer
     {
-        public SettingState State = SettingState.None;
+        protected SettingState State = SettingState.None;
 
         public CPlayer(int index)
             : base(index)
         {
+        }
+
+
+        public SettingState getState()
+        {
+            return State;
+        }
+
+        public void setState(SettingState state)
+        {
+            State = state;
         }
     }
 
@@ -20,6 +31,7 @@ namespace ChestControl
     {
         None,
         Setting,
+        RegionSetting,
         Deleting
     }
 }

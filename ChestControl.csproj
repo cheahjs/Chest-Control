@@ -55,18 +55,14 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="TerrariaServer, Version=1.0.4.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <ExecutableExtension>.exe</ExecutableExtension>
-      <HintPath>TerrariaServerBins\TerrariaServer.exe</HintPath>
+    <Reference Include="TerrariaServer">
+      <HintPath>$ProjectDirTerrariaServerBins\TerrariaServer.exe</HintPath>
     </Reference>
-    <Reference Include="TerrariaServerAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>TerrariaServerBins\TerrariaServerAPI.dll</HintPath>
+    <Reference Include="TerrariaServerAPI">
+      <HintPath>$ProjectDir\TerrariaServerBins\TerrariaServerAPI.dll</HintPath>
     </Reference>
-    <Reference Include="TShockAPI, Version=2.3.4.712, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>TerrariaServerBins\TShockAPI.dll</HintPath>
+    <Reference Include="TShockAPI">
+      <HintPath>$ProjectDir\TerrariaServerBins\ShockAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
