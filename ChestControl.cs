@@ -105,6 +105,12 @@ namespace ChestControl
 
                                 if (chest.isLocked())
                                 {
+                                    if (player.getState() == SettingState.Setting)
+                                    {
+                                        player.SendMessage("This chest is already locked!", Color.Red);
+                                        player.setState(SettingState.None);
+                                    }
+
                                     if (player.getState() == SettingState.Deleting)
                                     {
                                         if (chest.isOwner(player) || player.Group.HasPermission("removechestprotection"))
@@ -145,6 +151,11 @@ namespace ChestControl
                                 }
                                 else
                                 {
+                                    if (player.getState() == SettingState.Deleting)
+                                    {
+                                        player.SendMessage("This chest is not locked!", Color.Red);
+                                        player.setState(SettingState.None);
+                                    }
                                     if (player.getState() == SettingState.RegionSetting)
                                     {
 
