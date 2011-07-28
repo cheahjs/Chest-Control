@@ -108,7 +108,6 @@ namespace ChestControl
                                     if (player.getState() == SettingState.Setting)
                                     {
                                         player.SendMessage("This chest is already locked!", Color.Red);
-                                        player.setState(SettingState.None);
                                     }
 
                                     if (player.getState() == SettingState.Deleting)
@@ -123,8 +122,8 @@ namespace ChestControl
                                         {
                                             player.SendMessage("This chest isn't yours!", Color.Red);
                                         }
-                                        player.setState(SettingState.None);
                                     }
+
                                     if (player.getState() == SettingState.RegionSetting)
                                     {
                                         if (chest.isOwner(player))
@@ -139,14 +138,12 @@ namespace ChestControl
                                             else
                                             {
                                                 player.SendMessage("You can region share chest only if the chest is inside region!", Color.Red);
-                                                player.setState(SettingState.None);
                                             }
                                         }
                                         else
                                         {
                                             player.SendMessage("This chest isn't yours!", Color.Red);
                                         }
-                                        player.setState(SettingState.None);
                                     }
                                 }
                                 else
@@ -154,11 +151,10 @@ namespace ChestControl
                                     if (player.getState() == SettingState.Deleting)
                                     {
                                         player.SendMessage("This chest is not locked!", Color.Red);
-                                        player.setState(SettingState.None);
                                     }
+
                                     if (player.getState() == SettingState.RegionSetting)
                                     {
-
                                         if (TShock.Regions.InArea(x, y))
                                         {
                                             chest.setID(id);
@@ -168,7 +164,6 @@ namespace ChestControl
                                             chest.regionLock(true);
 
                                             player.SendMessage("This chest is now shared between region users with you as owner.", Microsoft.Xna.Framework.Color.Red);
-                                            player.setState(SettingState.None);
 
                                             ChestManager.Save();
                                         }
@@ -178,6 +173,7 @@ namespace ChestControl
                                             player.setState(SettingState.None);
                                         }
                                     }
+
                                     if (player.getState() == SettingState.Setting)
                                     {
                                         chest.setID(id);
@@ -186,14 +182,15 @@ namespace ChestControl
                                         chest.Lock();
 
                                         player.SendMessage("This chest is now yours, and yours only.", Microsoft.Xna.Framework.Color.Red);
-                                        player.setState(SettingState.None);
 
                                         ChestManager.Save();
                                     }
 
                                 }
                             }
-
+                            
+                            if (player.getState() != SettingState.None) //if player sam setting something - end his setting
+                                player.setState(SettingState.None);
                         }
                     }
                     break;
