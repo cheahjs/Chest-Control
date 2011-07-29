@@ -324,7 +324,7 @@ namespace ChestControl
                             var chest = ChestManager.getChest(id);
                             if (chest.hasOwner())//if not owned skip checks
                             {
-                                if (!chest.isOwner(player))//only owner can destroy chest
+                                if (!player.Group.HasPermission("removechestprotection") && !chest.isOwner(player))//only owner can destroy chest or somenone with permission "removechestprotection"
                                 {
                                     player.SendMessage("This chest is protected!", Color.Red);
                                     player.SendTileSquare(x, y);
