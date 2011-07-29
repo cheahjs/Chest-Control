@@ -352,17 +352,23 @@ namespace ChestControl
                         reader.Close();
                         var id = Terraria.Chest.FindChest(x, y);
                         var player = Players[e.Msg.whoAmI];
+
                         if (id != -1)
                         {
                             var chest = ChestManager.getChest(id);
-                            if (chest.hasOwner())//if not owned skip checks
+                            if (chest.hasOwner())//if owned stop remove
                             {
-                                if (!player.Group.HasPermission("removechestprotection") && !chest.isOwner(player))//only owner can destroy chest or somenone with permission "removechestprotection"
+                                if (player.Group.HasPermission("removechestprotection") || chest.isOwner(player))
+                                {
+                                    player.SendMessage("This chest is protected. To remove it, first remove protection using \"/cunset\" command.", Color.Red);
+                                }
+                                else
                                 {
                                     player.SendMessage("This chest is protected!", Color.Red);
-                                    player.SendTileSquare(x, y);
-                                    e.Handled = true;
                                 }
+
+                                player.SendTileSquare(x, y);
+                                e.Handled = true;
                             }
                         }
                     }
