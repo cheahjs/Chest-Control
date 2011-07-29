@@ -37,7 +37,10 @@ namespace ChestControl
 
         public bool hasAccessToChest(int id)
         {
-            
+            if (UnlockedChests.Contains(id))
+            {
+                return true;
+            }
             return false;
         }
     }
