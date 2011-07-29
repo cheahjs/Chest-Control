@@ -10,7 +10,7 @@ namespace ChestControl
     {
         protected SettingState State = SettingState.None;
         public string PasswordForChest = "";
-        protected int[] UnlockedChests;
+        protected List<int> UnlockedChests = new List<int>();
 
         public CPlayer(int index)
             : base(index)
@@ -30,21 +30,14 @@ namespace ChestControl
 
         public void unlockedChest(int id)
         {
-            UnlockedChests[id] = id;
+            UnlockedChests.Add(id);
             PasswordForChest = "";
         }
 
 
         public bool hasAccessToChest(int id)
         {
-            foreach (int chestid in UnlockedChests)
-            {
-                if (chestid == id)
-                {
-                    return true;
-                }
-            }
-
+            
             return false;
         }
     }
