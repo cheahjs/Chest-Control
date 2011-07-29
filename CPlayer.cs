@@ -31,14 +31,18 @@ namespace ChestControl
         public void unlockedChest(int id)
         {
             UnlockedChests[id] = id;
+            PasswordForChest = "";
         }
 
 
         public bool hasAccessToChest(int id)
         {
-            if (UnlockedChests.Contains(id))
+            foreach (int chestid in UnlockedChests)
             {
-                return true;
+                if (chestid == id)
+                {
+                    return true;
+                }
             }
 
             return false;

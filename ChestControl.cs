@@ -267,24 +267,31 @@ namespace ChestControl
                                         {
                                             if (chest.isLocked())
                                             {
-                                                if (chest.isOwner(player))
+                                                if (chest.getPassword() == "")
                                                 {
-                                                    player.SendMessage("You are owner of this chest, you dont need to unlock it. If you want to remove password use \"/lockchest remove\".", Color.Red);
-                                                }
-                                                else if (player.hasAccessToChest(chest.getID()))
-                                                {
-                                                    player.SendMessage("You already have access to this chest!", Color.Red);
+                                                    player.SendMessage("This chest can't be unlocked with password!", Color.Red);
                                                 }
                                                 else
                                                 {
-                                                    if (chest.checkPassword(player.PasswordForChest))
+                                                    if (chest.isOwner(player))
                                                     {
-                                                        player.unlockedChest(chest.getID());
-                                                        player.SendMessage("Chest unlocked! When you leave game you must unlock it again.", Color.Red);
+                                                        player.SendMessage("You are owner of this chest, you dont need to unlock it. If you want to remove password use \"/lockchest remove\".", Color.Red);
+                                                    }
+                                                    else if (player.hasAccessToChest(chest.getID()))
+                                                    {
+                                                        player.SendMessage("You already have access to this chest!", Color.Red);
                                                     }
                                                     else
                                                     {
-                                                        player.SendMessage("Wrong password for chest!", Color.Red);
+                                                        if (chest.checkPassword(player.PasswordForChest))
+                                                        {
+                                                            player.unlockedChest(chest.getID());
+                                                            player.SendMessage("Chest unlocked! When you leave game you must unlock it again.", Color.Red);
+                                                        }
+                                                        else
+                                                        {
+                                                            player.SendMessage("Wrong password for chest!", Color.Red);
+                                                        }
                                                     }
                                                 }
                                             }

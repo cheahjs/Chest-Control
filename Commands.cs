@@ -67,6 +67,7 @@ namespace ChestControl
         {
             if (ChestControl.Players[args.Player.Index].getState() == SettingState.UnLocking)
             {
+                ChestControl.Players[args.Player.Index].PasswordForChest = "";
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
             }
