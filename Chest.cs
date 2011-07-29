@@ -104,7 +104,7 @@ namespace ChestControl
         public bool isOwner(CPlayer player)
         {
 
-            if (hasOwner() && Owner.ToLower().Equals(player.Name.ToLower()))
+            if (hasOwner() && Owner.Equals(player.Name))
             {
                 return true;
             }
