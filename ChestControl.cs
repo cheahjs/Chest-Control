@@ -353,6 +353,19 @@ namespace ChestControl
                         var id = Terraria.Chest.FindChest(x, y);
                         var player = Players[e.Msg.whoAmI];
 
+                        if (id == -1)
+                        {
+                            id = Terraria.Chest.FindChest(x - 1, y);
+                            if (id == -1)
+                            {
+                                id = Terraria.Chest.FindChest(x - 1, y - 1);
+                                if (id == -1)
+                                {
+                                    id = Terraria.Chest.FindChest(x, y - 1);
+                                }
+                            }
+                        }
+
                         if (id != -1)
                         {
                             var chest = ChestManager.getChest(id);
