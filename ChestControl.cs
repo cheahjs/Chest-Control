@@ -29,7 +29,7 @@ namespace ChestControl
 
         public override Version Version
         {
-            get { return new Version(1, 0); }
+            get { return new Version(2, 0); }
         }
 
         public override string Author
@@ -68,7 +68,6 @@ namespace ChestControl
                     Players[i] = new CPlayer(i);
                 }
                 Init = true;
-                Console.WriteLine("ChestControl initiated.");
             }
         }
 
