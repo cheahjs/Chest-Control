@@ -16,6 +16,7 @@ namespace ChestControl
         protected Vector2 Position;
         protected bool Locked;
         protected bool RegionLock;
+        private string HashedPassword;
 
         public Chest()
         {
@@ -25,6 +26,15 @@ namespace ChestControl
             Position = new Vector2(0, 0);
             Locked = false;
             RegionLock = false;
+            HashedPassword = "";
+        }
+
+        public void reset()
+        {
+            Owner = "";
+            Locked = false;
+            RegionLock = false;
+            HashedPassword = "";
         }
 
         public void setID(int id)
@@ -82,10 +92,19 @@ namespace ChestControl
             RegionLock = locking;
         }
 
+        public bool hasOwner()
+        {
+            if (Owner != "")
+            {
+                return true;
+            }
+            return false;
+        }
+
         public bool isOwner(CPlayer player)
         {
 
-            if (Owner != "" && Owner.ToLower() == player.Name.ToLower())
+            if (hasOwner() && Owner.ToLower().Equals(player.Name.ToLower()))
             {
                 return true;
             }
@@ -113,7 +132,20 @@ namespace ChestControl
                 return true;
             }
 
-            if (isRegionLocked()) //if region lock then check region first
+            if (isOwner(player)) //if player is owner then skip checks
+            {
+                return true;
+            }
+
+            if (HashedPassword != "") //this chest is passworded, so check if user has unlocked this chest
+            {
+                if (player.hasAccessToChest(ID)) //has unlocked this chest
+                {
+                    return true;
+                }
+            }
+
+            if (isRegionLocked()) //if region lock then check region
             {
                 if (TShock.Regions.InArea(x, y)) //if not in area disable region lock
                 {
@@ -129,12 +161,46 @@ namespace ChestControl
                 }
             }
 
-            if (isOwner(player)) //check ownership
+            return false;
+        }
+
+        public bool checkPassword(string password)
+        {
+            if (HashedPassword.Equals(Utils.SHA1(password)))
             {
                 return true;
             }
 
             return false;
+        }
+
+        public void setPassword(string password)
+        {
+            if (password == "")
+                HashedPassword = "";
+
+            HashedPassword = Utils.SHA1(password);
+        }
+
+        public void setPassword(string password, bool checkForHash)
+        {
+            if (checkForHash)
+            {
+                string pattern = @"^[0-9a-fA-F]{40}$";
+                if (System.Text.RegularExpressions.Regex.IsMatch(password, pattern))
+                {
+                    HashedPassword = password;
+                }
+            }
+            else
+            {
+                setPassword(password);
+            }
+        }
+
+        public string getPassword()
+        {
+            return HashedPassword;
         }
     }
 }

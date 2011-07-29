@@ -9,6 +9,8 @@ namespace ChestControl
     public class CPlayer : TSPlayer
     {
         protected SettingState State = SettingState.None;
+        public string PasswordForChest = "";
+        protected int[] UnlockedChests;
 
         public CPlayer(int index)
             : base(index)
@@ -25,6 +27,22 @@ namespace ChestControl
         {
             State = state;
         }
+
+        public void unlockedChest(int id)
+        {
+            UnlockedChests[id] = id;
+        }
+
+
+        public bool hasAccessToChest(int id)
+        {
+            if (UnlockedChests.Contains(id))
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public enum SettingState
@@ -32,6 +50,9 @@ namespace ChestControl
         None,
         Setting,
         RegionSetting,
-        Deleting
+        PasswordSetting,
+        PasswordUnSetting,
+        Deleting,
+        UnLocking
     }
 }

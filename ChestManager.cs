@@ -40,7 +40,7 @@ namespace ChestControl
             foreach (var line in File.ReadAllLines(ChestSavePath))
             {
                 var args = line.Split('|');
-                if (args.Length < 6)
+                if (args.Length < 7)
                 {
                     continue;
                 }
@@ -58,6 +58,11 @@ namespace ChestControl
                     if (bool.Parse(args[5]))
                     {
                         chest.regionLock(true);
+                    }
+
+                    if (args[6] != "")
+                    {
+                        chest.setPassword(args[6], true);
                     }
                 }
                 catch
@@ -79,7 +84,7 @@ namespace ChestControl
             {
                 if (chest.getOwner() != "")
                 {
-                    lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}", chest.getID(), chest.getPosition().X, chest.getPosition().Y, chest.getOwner(), chest.isLocked(), chest.isRegionLocked()));
+                    lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}", chest.getID(), chest.getPosition().X, chest.getPosition().Y, chest.getOwner(), chest.isLocked(), chest.isRegionLocked(), chest.getPassword()));
                 }
             }
             File.WriteAllLines(ChestSavePath, lines.ToArray());

@@ -11,9 +11,13 @@ namespace ChestControl
         public static void Load()
         {
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", Set, "cset", "setchest"));
-            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRegionChest, "crset", "setregionchest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", UnSet, "cunset", "unsetchest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", CancelSet, "ccset", "ccunset", "cancelsetchest", "cancelunsetchest"));
+
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRegionChest, "rchest", "regionsharechest"));
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPasswordChest, "clock", "lockchest", "chestlock"));
+
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", UnLockChest, "cunlock", "unlockchest", "chestunlock"));
         }
 
         private static void Set(CommandArgs args)
@@ -30,6 +34,56 @@ namespace ChestControl
             }
         }
 
+        private static void SetPasswordChest(CommandArgs args)
+        {
+            if (ChestControl.Players[args.Player.Index].getState() == SettingState.PasswordSetting || ChestControl.Players[args.Player.Index].getState() == SettingState.PasswordUnSetting)
+            {
+                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
+            }
+            else
+            {
+                if (args.Parameters.Count != 1)
+                {
+                    args.Player.SendMessage("You must enter password! Or use \"remove\" as password to remove password.", Microsoft.Xna.Framework.Color.Red);
+                    return;
+                }
+
+                if (args.Parameters[0] == "unset" || args.Parameters[0] == "unlock" || args.Parameters[0] == "remove" || args.Parameters[0] == "rm" || args.Parameters[0] == "delete" || args.Parameters[0] == "del")
+                {
+                    ChestControl.Players[args.Player.Index].setState(SettingState.PasswordUnSetting);
+                    args.Player.SendMessage("Open a chest to remove password.", Microsoft.Xna.Framework.Color.BlueViolet);
+                }
+                else
+                {
+                    ChestControl.Players[args.Player.Index].PasswordForChest = args.Parameters[0];
+                    ChestControl.Players[args.Player.Index].setState(SettingState.PasswordSetting);
+                    args.Player.SendMessage("Open a chest to set password.", Microsoft.Xna.Framework.Color.BlueViolet);
+                }
+            }
+        }
+
+        private static void UnLockChest(CommandArgs args)
+        {
+            if (ChestControl.Players[args.Player.Index].getState() == SettingState.UnLocking)
+            {
+                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
+            }
+            else
+            {
+                if (args.Parameters.Count != 1)
+                {
+                    args.Player.SendMessage("You must enter password to unlock chest!", Microsoft.Xna.Framework.Color.Red);
+                    return;
+                }
+
+                ChestControl.Players[args.Player.Index].PasswordForChest = args.Parameters[0];
+                ChestControl.Players[args.Player.Index].setState(SettingState.UnLocking);
+                args.Player.SendMessage("Open a chest to unlock it.", Microsoft.Xna.Framework.Color.BlueViolet);
+            }
+        }
+
         private static void SetRegionChest(CommandArgs args)
         {
 
@@ -41,7 +95,7 @@ namespace ChestControl
             else
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.RegionSetting);
-                args.Player.SendMessage("Open a chest in region to set it region shareable.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("Open a chest in region to set/unset it region shareable.", Microsoft.Xna.Framework.Color.BlueViolet);
             }
         }
 
