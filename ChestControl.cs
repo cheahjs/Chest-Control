@@ -94,6 +94,7 @@ namespace ChestControl
                             if (id != -1)
                             {
                                 var chest = ChestManager.getChest(id);
+                                var naggedAboutLock = false;
 
                                 switch (player.getState())
                                 {
@@ -107,6 +108,7 @@ namespace ChestControl
                                             else
                                             {
                                                 player.SendMessage("This chest is already owned by someone!", Color.Red);
+                                                naggedAboutLock = true;
                                             }
                                         }
                                         else
@@ -155,6 +157,7 @@ namespace ChestControl
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
+                                                naggedAboutLock = true;
                                             }
                                         }
                                         else
@@ -167,7 +170,7 @@ namespace ChestControl
                                                 chest.Lock();
                                                 chest.regionLock(true);
 
-                                                player.SendMessage("This chest is now shared between region users with you as owner. Use this command again to disable it.", Color.Red);
+                                                player.SendMessage("This chest is now shared between region users with you as owner. Use this command again to disable region sharing (You will still be owner).", Color.Red);
 
                                                 ChestManager.Save();
                                             }
@@ -194,6 +197,7 @@ namespace ChestControl
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
+                                                naggedAboutLock = true;
                                             }
                                         }
                                         else
@@ -218,6 +222,7 @@ namespace ChestControl
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
+                                                naggedAboutLock = true;
                                             }
                                         }
                                         else
@@ -250,6 +255,7 @@ namespace ChestControl
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
+                                                naggedAboutLock = true;
                                             }
                                         }
                                         else
@@ -269,6 +275,7 @@ namespace ChestControl
                                                 if (chest.getPassword() == "")
                                                 {
                                                     player.SendMessage("This chest can't be unlocked with password!", Color.Red);
+                                                    naggedAboutLock = true;
                                                 }
                                                 else
                                                 {
@@ -290,6 +297,7 @@ namespace ChestControl
                                                         else
                                                         {
                                                             player.SendMessage("Wrong password for chest!", Color.Red);
+                                                            naggedAboutLock = true;
                                                         }
                                                     }
                                                 }
@@ -312,7 +320,10 @@ namespace ChestControl
                                 if (!player.Group.HasPermission("openallchests") && !chest.isOpenFor(player))
                                 {
                                     e.Handled = true;
-                                    player.SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
+                                    if (!naggedAboutLock)
+                                    {
+                                        player.SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
+                                    }
                                     return;
                                 }
 
