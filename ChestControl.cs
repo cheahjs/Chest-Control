@@ -121,6 +121,9 @@ namespace ChestControl
 
                                             ChestManager.Save();
                                         }
+
+                                        //end player setting
+                                        player.setState(SettingState.None);
                                         break;
 
                                     case SettingState.RegionSetting:
@@ -176,6 +179,8 @@ namespace ChestControl
 
                                         }
 
+                                        //end player setting
+                                        player.setState(SettingState.None);
                                         break;
 
                                     case SettingState.Deleting:
@@ -197,6 +202,8 @@ namespace ChestControl
                                             player.SendMessage("This chest is not protected!", Color.Red);
                                         }
 
+                                        //end player setting
+                                        player.setState(SettingState.None);
                                         break;
 
                                     case SettingState.PasswordSetting:
@@ -226,6 +233,9 @@ namespace ChestControl
 
                                             ChestManager.Save();
                                         }
+
+                                        //end player setting
+                                        player.setState(SettingState.None);
                                         break;
 
                                     case SettingState.PasswordUnSetting:
@@ -247,6 +257,9 @@ namespace ChestControl
                                         {
                                             player.SendMessage("This chest is not protected!", Color.Red);
                                         }
+
+                                        //end player setting
+                                        player.setState(SettingState.None);
                                         break;
 
                                     case SettingState.UnLocking:
@@ -284,6 +297,9 @@ namespace ChestControl
                                         {
                                             player.SendMessage("This chest is not protected!", Color.Red);
                                         }
+
+                                        //end player setting
+                                        player.setState(SettingState.None);
                                         break;
                                 }
 
@@ -296,7 +312,7 @@ namespace ChestControl
 
                             }
 
-                            if (player.getState() != SettingState.None) //if player is setting something - end his setting
+                            if (player.getState() != SettingState.None) //if player is still setting something - end his setting
                                 player.setState(SettingState.None);
                         }
                     }
