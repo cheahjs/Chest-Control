@@ -47,6 +47,7 @@ namespace ChestControl
             NetHooks.GetData += new NetHooks.GetDataD(NetHooks_GetData);
             ServerHooks.Leave += ServerHooks_Leave;
             GameHooks.Update += OnUpdate;
+            WorldHooks.SaveWorld += OnSaveWorld;
         }
 
         public override void DeInitialize()
@@ -54,6 +55,12 @@ namespace ChestControl
             NetHooks.GetData -= NetHooks_GetData;
             ServerHooks.Leave -= ServerHooks_Leave;
             GameHooks.Update -= OnUpdate;
+            WorldHooks.SaveWorld -= OnSaveWorld;
+        }
+
+        void OnSaveWorld(bool resettime, System.ComponentModel.HandledEventArgs e)
+        {
+            ChestManager.Save(); //save chests
         }
 
         void OnUpdate(Microsoft.Xna.Framework.GameTime obj)
@@ -119,8 +126,6 @@ namespace ChestControl
                                             chest.Lock();
 
                                             player.SendMessage("This chest is now yours, and yours only.", Color.Red);
-
-                                            ChestManager.Save();
                                         }
 
                                         //end player setting
@@ -137,7 +142,6 @@ namespace ChestControl
                                                     chest.regionLock(false);
 
                                                     player.SendMessage("Region share disabled. This chest is now only yours. To fully remove protection use \"cunset\".", Color.Red);
-                                                    ChestManager.Save();
                                                 }
                                                 else
                                                 {
@@ -146,7 +150,6 @@ namespace ChestControl
                                                         chest.regionLock(true);
 
                                                         player.SendMessage("This chest is now shared between region users. Use this command again to disable it.", Color.Red);
-                                                        ChestManager.Save();
                                                     }
                                                     else
                                                     {
@@ -171,8 +174,6 @@ namespace ChestControl
                                                 chest.regionLock(true);
 
                                                 player.SendMessage("This chest is now shared between region users with you as owner. Use this command again to disable region sharing (You will still be owner).", Color.Red);
-
-                                                ChestManager.Save();
                                             }
                                             else
                                             {
@@ -192,7 +193,6 @@ namespace ChestControl
                                             {
                                                 chest.reset();
                                                 player.SendMessage("This chest is no longer yours!", Color.Red);
-                                                ChestManager.Save();
                                             }
                                             else
                                             {
@@ -216,8 +216,6 @@ namespace ChestControl
                                             {
                                                 chest.setPassword(player.PasswordForChest);
                                                 player.SendMessage("This chest is now protected with password.", Color.Red);
-
-                                                ChestManager.Save();
                                             }
                                             else
                                             {
@@ -234,8 +232,6 @@ namespace ChestControl
                                             chest.setPassword(player.PasswordForChest);
 
                                             player.SendMessage("This chest is now protected with password, with you as owner.", Color.Red);
-
-                                            ChestManager.Save();
                                         }
 
                                         //end player setting
@@ -249,8 +245,6 @@ namespace ChestControl
                                             {
                                                 chest.setPassword("");
                                                 player.SendMessage("This chest password has been removed.", Color.Red);
-
-                                                ChestManager.Save();
                                             }
                                             else
                                             {

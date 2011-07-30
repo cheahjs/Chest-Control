@@ -157,7 +157,6 @@ namespace ChestControl
                 else
                 {
                     regionLock(false);
-                    ChestManager.Save();
                 }
             }
 
