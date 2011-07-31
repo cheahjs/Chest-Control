@@ -176,9 +176,13 @@ namespace ChestControl
         public void setPassword(string password)
         {
             if (password == "")
+            {
                 HashedPassword = "";
-
-            HashedPassword = Utils.SHA1(password);
+            }
+            else
+            {
+                HashedPassword = Utils.SHA1(password);
+            }
         }
 
         public void setPassword(string password, bool checkForHash)
