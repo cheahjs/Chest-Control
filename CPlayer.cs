@@ -47,6 +47,7 @@ namespace ChestControl
         None,
         Setting,
         RegionSetting,
+        PublicSetting,
         PasswordSetting,
         PasswordUnSetting,
         Deleting,

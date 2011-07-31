@@ -183,6 +183,39 @@ namespace ChestControl
                                         player.setState(SettingState.None);
                                         break;
 
+                                    case SettingState.PublicSetting:
+                                        if (chest.hasOwner())
+                                        {
+                                            if (chest.isOwner(player))
+                                            {
+                                                if (chest.isLocked())
+                                                {
+                                                    chest.UnLock();
+                                                    player.SendMessage("This chest is now public! Use this command again to set it private.", Color.Red);
+                                                }
+                                                else
+                                                {
+                                                    chest.Lock();
+                                                    player.SendMessage("This chest is now private! Use this command again to set it public.", Color.Red);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                player.SendMessage("This chest isn't yours!", Color.Red);
+                                                naggedAboutLock = true;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            chest.setID(id);
+                                            chest.setPosition(x, y);
+                                            chest.setOwner(player);
+
+                                            player.SendMessage("This chest is now yours. This chest is public. Use this command again to set it private.", Color.Red);
+                                        }
+                                        break;
+
                                     case SettingState.Deleting:
                                         if (chest.hasOwner())
                                         {
@@ -310,8 +343,7 @@ namespace ChestControl
 
                                 if (tplayer.Group.HasPermission("showchestinfo")) //if player should see chest info
                                 {
-                                    player.SendMessage("Chest Info", Color.Yellow);
-                                    player.SendMessage("Owner: " + chest.getOwner() + " || " + "Locked: " + (chest.isLocked() ? "Yes" : "No") + " || " + "RegionShare: " + (chest.isRegionLocked() ? "Yes" : "No") + " || " + "Password: " + (chest.getPassword() == "" ? "No" : "Yes"), Color.BlueViolet);
+                                    player.SendMessage("Chest Owner: " + chest.getOwner() + " || " + "Public: " + (chest.isLocked() ? "No" : "Yes") + " || " + "RegionShare: " + (chest.isRegionLocked() ? "Yes" : "No") + " || " + "Password: " + (chest.getPassword() == "" ? "No" : "Yes"), Color.Yellow);
                                 }
 
                                 if (!tplayer.Group.HasPermission("openallchests") && !chest.isOpenFor(player)) //if player doesnt has permission to see inside chest, then break and message

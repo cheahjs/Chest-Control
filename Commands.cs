@@ -11,7 +11,8 @@ namespace ChestControl
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", UnSet, "cunset", "unsetchest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", CancelSet, "ccset", "ccunset", "cancelsetchest", "cancelunsetchest"));
 
-            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRegionChest, "crset", "regionsharechest"));
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRegionChest, "crset", "rchest", "regionsharechest"));
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPublicChest, "cpset", "pchest", "setpublicchest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPasswordChest, "clock", "lockchest", "chestlock"));
 
             //everyone can unlock
@@ -85,7 +86,6 @@ namespace ChestControl
 
         private static void SetRegionChest(CommandArgs args)
         {
-
             if (ChestControl.Players[args.Player.Index].getState() == SettingState.RegionSetting)
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
@@ -95,6 +95,20 @@ namespace ChestControl
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.RegionSetting);
                 args.Player.SendMessage("Open a chest in region to set/unset it region shareable.", Color.BlueViolet);
+            }
+        }
+
+        private static void SetPublicChest(CommandArgs args)
+        {
+            if (ChestControl.Players[args.Player.Index].getState() == SettingState.PublicSetting)
+            {
+                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
+            }
+            else
+            {
+                ChestControl.Players[args.Player.Index].setState(SettingState.PublicSetting);
+                args.Player.SendMessage("Open a chest to set/unset it public.", Color.BlueViolet);
             }
         }
 
