@@ -312,7 +312,14 @@ namespace ChestControl
                                     e.Handled = true;
                                     if (!naggedAboutLock)
                                     {
-                                        player.SendMessage("This chest is magically locked.", Color.IndianRed);
+                                        if (chest.getPassword() != "") //protected with password - notice player about it
+                                        {
+                                            player.SendMessage("This chest is magically locked with password. ( Use \"/cunlock PASSWORD\" to unlock it. )", Color.IndianRed);
+                                        }
+                                        else
+                                        {
+                                            player.SendMessage("This chest is magically locked.", Color.IndianRed);
+                                        }
                                     }
                                     return;
                                 }

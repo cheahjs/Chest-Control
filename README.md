@@ -11,13 +11,15 @@ _/crset_ - Sets region share on chest - everyone who can build in region can ope
 
 _/clock_ _password_ - Sets password on chest - you can use _/clock_ _remove_ to disable password
 
-_/cunlock_  _password_ -  Unlocks and open chest
-
 
 _/ccset_ - Stops selecting of chest 
 
+_/cunlock_  _password_ -  Unlocks and open chest
+
 ### Permissions:
-_protectchest_ - standard permission for players - can protect and unlock
+Everyone can use _/cunlock_ command.
+
+_protectchest_ - standard permission for players - can protect its own chests
 
 _openallchests_ - permission for admins - can open even protected chests, can't destroy them
 

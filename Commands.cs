@@ -14,7 +14,8 @@ namespace ChestControl
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRegionChest, "crset", "regionsharechest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPasswordChest, "clock", "lockchest", "chestlock"));
 
-            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", UnLockChest, "cunlock", "unlockchest", "chestunlock"));
+            //everyone can unlock
+            TShockAPI.Commands.ChatCommands.Add(new Command(UnLockChest, "cunlock", "unlockchest", "chestunlock"));
         }
 
         private static void Set(CommandArgs args)
