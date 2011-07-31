@@ -7,7 +7,7 @@ _/cset_ - Lock the chest and sets you as owner - only you can open or destroy it
 
 _/cunset_ - Removes protection of chest
 
-_/rchest_ - Sets region share on chest - everyone who can build in region can open chest, they can't destroy it
+_/crset_ - Sets region share on chest - everyone who can build in region can open chest, they can't destroy it
 
 _/clock_ _password_ - Sets password on chest - you can use _/clock_ _remove_ to disable password
 
