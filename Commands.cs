@@ -21,15 +21,37 @@ namespace ChestControl
 
         private static void Set(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.Setting)
+            if (ChestControl.Players[args.Player.Index].getState() == SettingState.Setting || ChestControl.Players[args.Player.Index].getState() == SettingState.PublicSetting)
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.Setting);
-                args.Player.SendMessage("Open a chest to protect it.", Color.BlueViolet);
+                if (args.Parameters.Count == 1)
+                {
+                    switch (args.Parameters[0])
+                    {
+                        case "public":
+                            ChestControl.Players[args.Player.Index].setState(SettingState.PublicSetting);
+                            args.Player.SendMessage("Open a chest to protect it (public).", Color.BlueViolet);
+                            break;
+
+                        case "private":
+                            ChestControl.Players[args.Player.Index].setState(SettingState.Setting);
+                            args.Player.SendMessage("Open a chest to protect it (private).", Color.BlueViolet);
+                            break;
+
+                        default:
+                            args.Player.SendMessage("Wrong subcommand, use \"public\" or \"private\".", Color.BlueViolet);
+                            break;
+                    }
+                }
+                else
+                {
+                    ChestControl.Players[args.Player.Index].setState(SettingState.Setting);
+                    args.Player.SendMessage("Open a chest to protect it.", Color.BlueViolet);
+                }
             }
         }
 

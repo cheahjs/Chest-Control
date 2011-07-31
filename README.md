@@ -3,7 +3,7 @@ Protect your chests.
 Type command and open chest. Type the same command again to stop selecting.
 
 ### Usage:
-_/cset_ - Lock the chest and sets you as owner - only you can open or destroy it
+_/cset_ - Lock the chest and sets you as owner - only you can open or destroy it ( You can use subcommand "public" to set you as owner, but everyone can open it. )
 
 _/cunset_ - Removes protection of chest
 

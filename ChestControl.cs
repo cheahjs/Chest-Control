@@ -191,12 +191,12 @@ namespace ChestControl
                                                 if (chest.isLocked())
                                                 {
                                                     chest.UnLock();
-                                                    player.SendMessage("This chest is now public! Use this command again to set it private.", Color.Red);
+                                                    player.SendMessage("This chest is now public! Use \"/cpset\" to set it private.", Color.Red);
                                                 }
                                                 else
                                                 {
                                                     chest.Lock();
-                                                    player.SendMessage("This chest is now private! Use this command again to set it public.", Color.Red);
+                                                    player.SendMessage("This chest is now private! Use \"/cpset\" to set it public.", Color.Red);
                                                 }
                                             }
                                             else
@@ -212,7 +212,7 @@ namespace ChestControl
                                             chest.setPosition(x, y);
                                             chest.setOwner(player);
 
-                                            player.SendMessage("This chest is now yours. This chest is public. Use this command again to set it private.", Color.Red);
+                                            player.SendMessage("This chest is now yours. This chest is public. Use \"/cpset\" to set it private.", Color.Red);
                                         }
                                         break;
 
