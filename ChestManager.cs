@@ -1,11 +1,8 @@
-﻿using System;
+﻿using Terraria;
+using TShockAPI;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using Microsoft.Xna.Framework;
-using TShockAPI;
-using Terraria;
 
 namespace ChestControl
 {
@@ -73,7 +70,7 @@ namespace ChestControl
 
             if (error)
             {
-                Console.WriteLine("Failed to load some chests data, corresponding chests will be left unprotected.");
+                System.Console.WriteLine("Failed to load some chests data, corresponding chests will be left unprotected.");
             }
         }
 
@@ -82,7 +79,7 @@ namespace ChestControl
             var lines = new List<string>();
             foreach (var chest in Chests)
             {
-                if (chest.getOwner() != "")
+                if (chest.getOwner() != "" && chest.getID() != -1)
                 {
                     lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}", chest.getID(), chest.getPosition().X, chest.getPosition().Y, chest.getOwner(), chest.isLocked(), chest.isRegionLocked(), chest.getPassword()));
                 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TShockAPI;
-using Terraria;
+﻿using TShockAPI;
 using Microsoft.Xna.Framework;
 
 namespace ChestControl
@@ -21,7 +16,7 @@ namespace ChestControl
         public Chest()
         {
             ID = -1;
-            WorldID = Main.worldID;
+            WorldID = Terraria.Main.worldID;
             Owner = "";
             Position = new Vector2(0, 0);
             Locked = false;
@@ -69,7 +64,7 @@ namespace ChestControl
 
         public void setPosition(int x, int y)
         {
-            Position = new Microsoft.Xna.Framework.Vector2(x, y);
+            Position = new Vector2(x, y);
         }
 
         public Vector2 getPosition()
@@ -124,9 +119,6 @@ namespace ChestControl
 
         public bool isOpenFor(CPlayer player)
         {
-            int x = (int)Position.X;
-            int y = (int)Position.Y;
-
             if (!isLocked()) //if chest not locked skip all checks
             {
                 return true;
@@ -147,6 +139,9 @@ namespace ChestControl
 
             if (isRegionLocked()) //if region lock then check region
             {
+                int x = (int)Position.X;
+                int y = (int)Position.Y;
+
                 if (TShock.Regions.InArea(x, y)) //if not in area disable region lock
                 {
                     if (TShock.Regions.CanBuild(x, y, player)) //if can build in area
@@ -190,7 +185,7 @@ namespace ChestControl
             if (checkForHash)
             {
                 string pattern = @"^[0-9a-fA-F]{40}$";
-                if (System.Text.RegularExpressions.Regex.IsMatch(password, pattern))
+                if (System.Text.RegularExpressions.Regex.IsMatch(password, pattern)) //is SHA1 string
                 {
                     HashedPassword = password;
                 }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Terraria;
+﻿using Terraria;
 using TerrariaAPI;
 using TerrariaAPI.Hooks;
 using TShockAPI;
+using System;
 using System.IO;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace ChestControl
@@ -34,7 +30,7 @@ namespace ChestControl
 
         public override string Author
         {
-            get { return "Deathmax,Natrim"; }
+            get { return "Deathmax, Natrim"; }
         }
 
         public override string Description
@@ -63,7 +59,7 @@ namespace ChestControl
             ChestManager.Save(); //save chests
         }
 
-        void OnUpdate(Microsoft.Xna.Framework.GameTime obj)
+        void OnUpdate(GameTime obj)
         {
             if (!Init && Main.worldID > 0)
             {
@@ -311,12 +307,12 @@ namespace ChestControl
                                         break;
                                 }
 
-                                if (!player.Group.HasPermission("openallchests") && !chest.isOpenFor(player))
+                                if (!player.Group.HasPermission("openallchests") && !chest.isOpenFor(player)) //if playr doesnt has permission to see inside chest, then break and message
                                 {
                                     e.Handled = true;
                                     if (!naggedAboutLock)
                                     {
-                                        player.SendMessage("This chest is magically locked.", Microsoft.Xna.Framework.Color.IndianRed);
+                                        player.SendMessage("This chest is magically locked.", Color.IndianRed);
                                     }
                                     return;
                                 }
@@ -347,25 +343,27 @@ namespace ChestControl
                         var id = Terraria.Chest.FindChest(x, y);
                         var player = Players[e.Msg.whoAmI];
 
+                        //dirty fix for finding chest, try to find chest point around
+                        //TODO: maybe add some checking on tile type ?
                         if (id == -1)
                         {
-                            id = Terraria.Chest.FindChest(x - 1, y);
+                            id = Terraria.Chest.FindChest(x - 1, y); //search one tile left
                             if (id == -1)
                             {
-                                id = Terraria.Chest.FindChest(x - 1, y - 1);
+                                id = Terraria.Chest.FindChest(x - 1, y - 1); //search one tile left and one tile up
                                 if (id == -1)
                                 {
-                                    id = Terraria.Chest.FindChest(x, y - 1);
+                                    id = Terraria.Chest.FindChest(x, y - 1); //search one tile up
                                 }
                             }
                         }
 
-                        if (id != -1)
+                        if (id != -1) //if have found chest
                         {
                             var chest = ChestManager.getChest(id);
-                            if (chest.hasOwner())//if owned stop remove
+                            if (chest.hasOwner())//if owned stop removing
                             {
-                                if (player.Group.HasPermission("removechestprotection") || chest.isOwner(player))
+                                if (player.Group.HasPermission("removechestprotection") || chest.isOwner(player)) //display more verbose info to player who has permission to remove protection on this chest
                                 {
                                     player.SendMessage("This chest is protected. To remove it, first remove protection using \"/cunset\" command.", Color.Red);
                                 }

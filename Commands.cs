@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TShockAPI;
+﻿using TShockAPI;
+using Microsoft.Xna.Framework;
 
 namespace ChestControl
 {
@@ -25,12 +22,12 @@ namespace ChestControl
             if (ChestControl.Players[args.Player.Index].getState() == SettingState.Setting)
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
-                args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.Setting);
-                args.Player.SendMessage("Open a chest to protect it.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("Open a chest to protect it.", Color.BlueViolet);
             }
         }
 
@@ -39,26 +36,26 @@ namespace ChestControl
             if (ChestControl.Players[args.Player.Index].getState() == SettingState.PasswordSetting || ChestControl.Players[args.Player.Index].getState() == SettingState.PasswordUnSetting)
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
-                args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
                 if (args.Parameters.Count != 1)
                 {
-                    args.Player.SendMessage("You must enter password! Or use \"remove\" as password to remove password.", Microsoft.Xna.Framework.Color.Red);
+                    args.Player.SendMessage("You must enter password! Or use \"remove\" as password to remove password.", Color.Red);
                     return;
                 }
 
                 if (args.Parameters[0] == "unset" || args.Parameters[0] == "unlock" || args.Parameters[0] == "remove" || args.Parameters[0] == "rm" || args.Parameters[0] == "delete" || args.Parameters[0] == "del")
                 {
                     ChestControl.Players[args.Player.Index].setState(SettingState.PasswordUnSetting);
-                    args.Player.SendMessage("Open a chest to remove password.", Microsoft.Xna.Framework.Color.BlueViolet);
+                    args.Player.SendMessage("Open a chest to remove password.", Color.BlueViolet);
                 }
                 else
                 {
                     ChestControl.Players[args.Player.Index].PasswordForChest = args.Parameters[0];
                     ChestControl.Players[args.Player.Index].setState(SettingState.PasswordSetting);
-                    args.Player.SendMessage("Open a chest to set password.", Microsoft.Xna.Framework.Color.BlueViolet);
+                    args.Player.SendMessage("Open a chest to set password.", Color.BlueViolet);
                 }
             }
         }
@@ -69,19 +66,19 @@ namespace ChestControl
             {
                 ChestControl.Players[args.Player.Index].PasswordForChest = "";
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
-                args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
                 if (args.Parameters.Count != 1)
                 {
-                    args.Player.SendMessage("You must enter password to unlock chest!", Microsoft.Xna.Framework.Color.Red);
+                    args.Player.SendMessage("You must enter password to unlock chest!", Color.Red);
                     return;
                 }
 
                 ChestControl.Players[args.Player.Index].PasswordForChest = args.Parameters[0];
                 ChestControl.Players[args.Player.Index].setState(SettingState.UnLocking);
-                args.Player.SendMessage("Open a chest to unlock it.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("Open a chest to unlock it.", Color.BlueViolet);
             }
         }
 
@@ -91,12 +88,12 @@ namespace ChestControl
             if (ChestControl.Players[args.Player.Index].getState() == SettingState.RegionSetting)
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
-                args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.RegionSetting);
-                args.Player.SendMessage("Open a chest in region to set/unset it region shareable.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("Open a chest in region to set/unset it region shareable.", Color.BlueViolet);
             }
         }
 
@@ -105,19 +102,19 @@ namespace ChestControl
             if (ChestControl.Players[args.Player.Index].getState() == SettingState.Deleting)
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.None);
-                args.Player.SendMessage("You are no longer selecting a chest.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
                 ChestControl.Players[args.Player.Index].setState(SettingState.Deleting);
-                args.Player.SendMessage("Open a chest to delete it's protection.", Microsoft.Xna.Framework.Color.BlueViolet);
+                args.Player.SendMessage("Open a chest to delete it's protection.", Color.BlueViolet);
             }
         }
 
         private static void CancelSet(CommandArgs args)
         {
             ChestControl.Players[args.Player.Index].setState(SettingState.None);
-            args.Player.SendMessage("Setting/Unsetting of chest protection canceled.", Microsoft.Xna.Framework.Color.BlueViolet);
+            args.Player.SendMessage("Selection of chest canceled.", Color.BlueViolet);
         }
     }
 }
