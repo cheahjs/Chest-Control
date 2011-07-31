@@ -93,7 +93,8 @@ namespace ChestControl
                             var y = reader.ReadInt32();
                             reader.Close();
                             var id = Terraria.Chest.FindChest(x, y);
-                            var player = Players[e.Msg.whoAmI];
+                            var player = ChestControl.Players[e.Msg.whoAmI];
+                            var tplayer = TShock.Players[e.Msg.whoAmI];
                             if (id != -1)
                             {
                                 var chest = ChestManager.getChest(id);
@@ -185,7 +186,7 @@ namespace ChestControl
                                     case SettingState.Deleting:
                                         if (chest.hasOwner())
                                         {
-                                            if (chest.isOwner(player) || player.Group.HasPermission("removechestprotection"))
+                                            if (chest.isOwner(player) || tplayer.Group.HasPermission("removechestprotection"))
                                             {
                                                 chest.reset();
                                                 player.SendMessage("This chest is no longer yours!", Color.Red);
@@ -307,7 +308,13 @@ namespace ChestControl
                                         break;
                                 }
 
-                                if (!player.Group.HasPermission("openallchests") && !chest.isOpenFor(player)) //if playr doesnt has permission to see inside chest, then break and message
+                                if (tplayer.Group.HasPermission("showchestinfo")) //if player should see chest info
+                                {
+                                    player.SendMessage("Chest Info", Color.Yellow);
+                                    player.SendMessage("Owner: " + chest.getOwner() + " || " + "Locked: " + (chest.isLocked() ? "Yes" : "No") + " || " + "RegionShare: " + (chest.isRegionLocked() ? "Yes" : "No") + " || " + "Password: " + (chest.getPassword() == "" ? "No" : "Yes"), Color.BlueViolet);
+                                }
+
+                                if (!tplayer.Group.HasPermission("openallchests") && !chest.isOpenFor(player)) //if player doesnt has permission to see inside chest, then break and message
                                 {
                                     e.Handled = true;
                                     if (!naggedAboutLock)
@@ -323,7 +330,6 @@ namespace ChestControl
                                     }
                                     return;
                                 }
-
                             }
 
                             if (player.getState() != SettingState.None) //if player is still setting something - end his setting
@@ -348,7 +354,8 @@ namespace ChestControl
                         y = reader.ReadInt32();
                         reader.Close();
                         var id = Terraria.Chest.FindChest(x, y);
-                        var player = Players[e.Msg.whoAmI];
+                        var player = ChestControl.Players[e.Msg.whoAmI];
+                        var tplayer = TShock.Players[e.Msg.whoAmI];
 
                         //dirty fix for finding chest, try to find chest point around
                         //TODO: maybe add some checking on tile type ?
@@ -370,7 +377,7 @@ namespace ChestControl
                             var chest = ChestManager.getChest(id);
                             if (chest.hasOwner())//if owned stop removing
                             {
-                                if (player.Group.HasPermission("removechestprotection") || chest.isOwner(player)) //display more verbose info to player who has permission to remove protection on this chest
+                                if (tplayer.Group.HasPermission("removechestprotection") || chest.isOwner(player)) //display more verbose info to player who has permission to remove protection on this chest
                                 {
                                     player.SendMessage("This chest is protected. To remove it, first remove protection using \"/cunset\" command.", Color.Red);
                                 }
