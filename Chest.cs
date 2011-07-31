@@ -144,7 +144,7 @@ namespace ChestControl
 
                 if (TShock.Regions.InArea(x, y)) //if not in area disable region lock
                 {
-                    if (TShock.Regions.CanBuild(x, y, player)) //if can build in area
+                    if (TShock.Regions.CanBuild(x, y, TShock.Players[player.Index])) //if can build in area
                     {
                         return true;
                     }
