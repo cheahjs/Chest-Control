@@ -32,3 +32,8 @@ _showchestinfo_ - permission for admins - gets info about opened chest
 - timed access - give player permission to open chest based on time and/or number of accesses
 - integration with TShock user system
 - use another format than txt files - use TShock DB?
+- add protection to signs - maybe another plugin?
+
+#### Maybe Todo:
+- piggybank protection? - no idea what that should be
+- mass protect command? - really no idea how exactly that should be done
