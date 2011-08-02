@@ -200,5 +200,29 @@ namespace ChestControl
         {
             return HashedPassword;
         }
+
+
+        public static bool TileIsChest(Terraria.Tile tile)
+        {
+            if (tile.type == 0x15)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TileIsChest(Vector2 position)
+        {
+            int x = (int)position.X;
+            int y = (int)position.Y;
+
+            return TileIsChest(x, y);
+        }
+
+        public static bool TileIsChest(int x, int y)
+        {
+            return TileIsChest(Terraria.Main.tile[x, y]);
+        }
     }
 }

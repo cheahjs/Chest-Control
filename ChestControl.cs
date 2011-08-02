@@ -386,7 +386,7 @@ namespace ChestControl
                         y = reader.ReadInt32();
                         reader.Close();
 
-                        if (Main.tile[x, y].type == 0x15) //if is Chest
+                        if (Chest.TileIsChest(x, y)) //if is Chest
                         {
                             var id = Terraria.Chest.FindChest(x, y);
                             var player = ChestControl.Players[e.Msg.whoAmI];
