@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace ChestControl
 {
-    [APIVersion(1, 6)]
+    [APIVersion(1, 7)]
     public class ChestControl : TerrariaPlugin
     {
         public static bool Init = false;
