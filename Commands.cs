@@ -1,5 +1,6 @@
 ﻿using TShockAPI;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace ChestControl
 {
@@ -17,6 +18,28 @@ namespace ChestControl
 
             //everyone can unlock
             TShockAPI.Commands.ChatCommands.Add(new Command(UnLockChest, "cunlock", "unlockchest", "chestunlock"));
+
+            //add permissions to db if not exists
+            bool perm = false;
+            foreach (Group group in TShock.Groups.groups)
+            {
+                if (group.Name != "superadmin")
+                {
+                    if (group.HasPermission("protectchest"))
+                    {
+                        perm = true;
+                    }
+                }
+            }
+            if (!perm)
+            {
+                List<string> permissions = new List<string>();
+                permissions.Add("protectchest");
+                permissions.Add("openallchests");
+                permissions.Add("removechestprotection");
+                permissions.Add("showchestinfo");
+                TShock.Groups.AddPermissions("trustedadmin", permissions);
+            }
         }
 
         private static void Set(CommandArgs args)
