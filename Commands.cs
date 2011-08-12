@@ -28,6 +28,7 @@ namespace ChestControl
                     if (group.HasPermission("protectchest"))
                     {
                         perm = true;
+                        break; //we know that someone already has it, so stop
                     }
                 }
             }
