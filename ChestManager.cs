@@ -61,6 +61,13 @@ namespace ChestControl
                     {
                         chest.setPassword(args[6], true);
                     }
+
+                    //check if chest still exists in world
+                    if (!Chest.TileIsChest(chest.getPosition()))
+                    {
+                        //chest dont exists - so reset it
+                        chest.reset();
+                    }
                 }
                 catch
                 {
@@ -81,7 +88,7 @@ namespace ChestControl
             {
                 if (Chest.TileIsChest(chest.getPosition()))
                 {
-                    if (chest.getOwner() != "" && chest.getID() != -1)
+                    if (chest.getOwner() != "")
                     {
                         lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}", chest.getID(), chest.getPosition().X, chest.getPosition().Y, chest.getOwner(), chest.isLocked(), chest.isRegionLocked(), chest.getPassword()));
                     }
