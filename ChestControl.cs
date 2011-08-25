@@ -291,6 +291,67 @@ namespace ChestControl
                                         player.setState(SettingState.None);
                                         break;
 
+                                    case SettingState.RefillSetting:
+                                        if (chest.hasOwner())
+                                        {
+                                            if (chest.isOwner(player))
+                                            {
+                                                chest.setRefill(true);
+                                                player.SendMessage("This chest is will now always refill with items.", Color.Red);
+                                            }
+                                            else
+                                            {
+                                                player.SendMessage("This chest isn't yours!", Color.Red);
+                                                naggedAboutLock = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            chest.setID(id);
+                                            chest.setPosition(x, y);
+                                            chest.setOwner(player);
+                                            chest.setRefill(true);
+
+                                            player.SendMessage("This chest is will now always refill with items, with you as owner.", Color.Red);
+                                        }
+
+                                        //end player setting
+                                        player.setState(SettingState.None);
+                                        break;
+
+                                    case SettingState.RefillUnSetting:
+                                        if (chest.IsRefill())
+                                        {
+                                            if (chest.hasOwner())
+                                            {
+                                                if (chest.isOwner(player))
+                                                {
+                                                    chest.setRefill(false);
+                                                    player.SendMessage("This chest is will no longer refill with items.", Color.Red);
+                                                }
+                                                else
+                                                {
+                                                    player.SendMessage("This chest isn't yours!", Color.Red);
+                                                    naggedAboutLock = true;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                chest.setID(id);
+                                                chest.setPosition(x, y);
+                                                chest.setOwner(player);
+                                                chest.setRefill(false);
+
+                                                player.SendMessage("This chest is will no longer refill with items", Color.Red);
+                                            }
+                                        }
+                                        else
+                                            player.SendMessage("This chest is not refilling!", Color.Red);
+
+                                        //end player setting
+                                        player.setState(SettingState.None);
+                                        break;
+
                                     case SettingState.UnLocking:
                                         if (chest.hasOwner())
                                         {
@@ -363,7 +424,6 @@ namespace ChestControl
                                     return;
                                 }
                             }
-
                             if (player.getState() != SettingState.None) //if player is still setting something - end his setting
                                 player.setState(SettingState.None);
                         }
@@ -423,6 +483,28 @@ namespace ChestControl
                                     player.SendTileSquare(x, y);
                                     e.Handled = true;
                                 }
+                            }
+                        }
+                    }
+                    break;
+                case PacketTypes.ChestItem:
+                    using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
+                    {
+                        BinaryReader reader = new BinaryReader(data);
+                        var id = reader.ReadInt16();
+                        var slot = reader.ReadByte();
+                        var stack = reader.ReadByte();
+                        var itemname = reader.ReadString();
+                        reader.Close();
+                        if (id != -1)
+                        {
+                            var chest = ChestManager.getChest(id);
+                            if (chest.IsRefill())
+                            {
+                                //this should already stop changes to the chest, "refilling" the chest
+                                e.Handled = true;
+                                //but just in case
+                                Terraria.Main.chest[id].item = chest.getRefillItems();
                             }
                         }
                     }

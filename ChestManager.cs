@@ -49,18 +49,15 @@ namespace ChestControl
                     chest.setOwner(args[3]);
                     chest.setID(int.Parse(args[0]));
                     if (bool.Parse(args[4]))
-                    {
                         chest.Lock();
-                    }
                     if (bool.Parse(args[5]))
-                    {
                         chest.regionLock(true);
-                    }
-
                     if (args[6] != "")
-                    {
                         chest.setPassword(args[6], true);
-                    }
+                    //provide backwards compatibility
+                    if (args.Length == 9)
+                        if (bool.Parse(args[7]))
+                            chest.setRefillItems(args[8], true);
 
                     //check if chest still exists in world
                     if (!Chest.TileIsChest(chest.getPosition()))
@@ -90,7 +87,10 @@ namespace ChestControl
                 {
                     if (chest.getOwner() != "")
                     {
-                        lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}", chest.getID(), chest.getPosition().X, chest.getPosition().Y, chest.getOwner(), chest.isLocked(), chest.isRegionLocked(), chest.getPassword()));
+                        lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}", 
+                            chest.getID(), chest.getPosition().X, chest.getPosition().Y, 
+                            chest.getOwner(), chest.isLocked(), chest.isRegionLocked(), 
+                            chest.getPassword(), chest.IsRefill(), string.Join(",", chest.getRefillItemNames())));
                     }
                 }
             }

@@ -51,6 +51,8 @@ namespace ChestControl
         PasswordSetting,
         PasswordUnSetting,
         Deleting,
-        UnLocking
+        UnLocking,
+        RefillSetting,
+        RefillUnSetting
     }
 }

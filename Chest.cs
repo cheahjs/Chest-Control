@@ -11,7 +11,9 @@ namespace ChestControl
         protected Vector2 Position;
         protected bool Locked;
         protected bool RegionLock;
+        protected bool Refill;
         private string HashedPassword;
+        protected Terraria.Item[] RefillItems;
 
         public Chest()
         {
@@ -21,7 +23,9 @@ namespace ChestControl
             Position = new Vector2(0, 0);
             Locked = false;
             RegionLock = false;
+            Refill = false;
             HashedPassword = "";
+            RefillItems = new Terraria.Item[20];
         }
 
         public void reset()
@@ -29,7 +33,9 @@ namespace ChestControl
             Owner = "";
             Locked = false;
             RegionLock = false;
+            Refill = false;
             HashedPassword = "";
+            RefillItems = new Terraria.Item[20];
         }
 
         public void setID(int id)
@@ -115,6 +121,54 @@ namespace ChestControl
         public bool isRegionLocked()
         {
             return RegionLock;
+        }
+
+        public bool IsRefill()
+        {
+            return Refill;
+        }
+
+        public void setRefill(bool refill)
+        {
+            Refill = refill;
+            if (refill)
+                RefillItems = Terraria.Main.chest[ID].item;
+            else
+                RefillItems = new Terraria.Item[20];
+        }
+
+        public Terraria.Item[] getRefillItems()
+        {
+            return RefillItems;
+        }
+
+        public System.Collections.Generic.List<string> getRefillItemNames()
+        {
+            var list = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < RefillItems.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(RefillItems[i].name))
+                    list.Add(RefillItems[i].name);
+            }
+            return list;
+        }
+
+        public void setRefillItems(string raw, bool set = false)
+        {
+            var array = raw.Split(',');
+            for (int i = 0; i < array.Length && i < 20; i++)
+            {
+                var item = new Terraria.Item();
+                item.SetDefaults(array[i]);
+                RefillItems[i] = item;
+            }
+            if (set)
+                setChestItems(RefillItems);
+        }
+
+        public void setChestItems(Terraria.Item[] items)
+        {
+            Terraria.Main.chest[ID].item = items;
         }
 
         public bool isOpenFor(CPlayer player)
