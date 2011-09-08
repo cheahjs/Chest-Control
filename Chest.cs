@@ -147,8 +147,9 @@ namespace ChestControl
             var list = new System.Collections.Generic.List<string>();
             for (int i = 0; i < RefillItems.Length; i++)
             {
-                if (!string.IsNullOrEmpty(RefillItems[i].name))
-                    list.Add(RefillItems[i].name);
+                if (RefillItems[i] != null)
+                    if (!string.IsNullOrEmpty(RefillItems[i].name))
+                        list.Add(RefillItems[i].name);
             }
             if (list.Count == 0)
                 list.Add("");
