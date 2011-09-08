@@ -8,7 +8,7 @@ using System.Drawing;
 
 namespace ChestControl
 {
-    [APIVersion(1, 7)]
+    [APIVersion(1, 8)]
     public class ChestControl : TerrariaPlugin
     {
         public static bool Init = false;
