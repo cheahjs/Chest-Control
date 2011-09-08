@@ -127,8 +127,11 @@ namespace ChestControl
                         args.Player.SendMessage("Open a chest to remove refill.", Color.BlueViolet);
                     }
                 }
-                ChestControl.Players[args.Player.Index].setState(SettingState.RefillSetting);
-                args.Player.SendMessage("Open a chest to set refill.", Color.BlueViolet);
+                else
+                {
+                    ChestControl.Players[args.Player.Index].setState(SettingState.RefillSetting);
+                    args.Player.SendMessage("Open a chest to set refill.", Color.BlueViolet);
+                }
             }
         }
 
