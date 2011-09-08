@@ -2,7 +2,7 @@
 using TShockAPI;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Xna.Framework;
+using System.Drawing;
 
 namespace ChestControl
 {
@@ -45,7 +45,7 @@ namespace ChestControl
                 {
                     var chest = Chests[int.Parse(args[0])];
 
-                    chest.setPosition(new Vector2(int.Parse(args[1]), int.Parse(args[2])));
+                    chest.setPosition(new PointF(int.Parse(args[1]), int.Parse(args[2])));
                     chest.setOwner(args[3]);
                     chest.setID(int.Parse(args[0]));
                     if (bool.Parse(args[4]))

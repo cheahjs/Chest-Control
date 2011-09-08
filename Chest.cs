@@ -1,5 +1,5 @@
 ﻿using TShockAPI;
-using Microsoft.Xna.Framework;
+using System.Drawing;
 
 namespace ChestControl
 {
@@ -8,7 +8,7 @@ namespace ChestControl
         protected int ID;
         protected int WorldID;
         protected string Owner;
-        protected Vector2 Position;
+        protected PointF Position;
         protected bool Locked;
         protected bool RegionLock;
         protected bool Refill;
@@ -20,7 +20,7 @@ namespace ChestControl
             ID = -1;
             WorldID = Terraria.Main.worldID;
             Owner = "";
-            Position = new Vector2(0, 0);
+            Position = new PointF(0, 0);
             Locked = false;
             RegionLock = false;
             Refill = false;
@@ -63,17 +63,17 @@ namespace ChestControl
             return Owner;
         }
 
-        public void setPosition(Vector2 position)
+        public void setPosition(PointF position)
         {
             Position = position;
         }
 
         public void setPosition(int x, int y)
         {
-            Position = new Vector2(x, y);
+            Position = new PointF(x, y);
         }
 
-        public Vector2 getPosition()
+        public PointF getPosition()
         {
             return Position;
         }
@@ -266,7 +266,7 @@ namespace ChestControl
             return false;
         }
 
-        public static bool TileIsChest(Vector2 position)
+        public static bool TileIsChest(PointF position)
         {
             int x = (int)position.X;
             int y = (int)position.Y;

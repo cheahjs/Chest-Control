@@ -4,7 +4,7 @@ using TerrariaAPI.Hooks;
 using TShockAPI;
 using System;
 using System.IO;
-using Microsoft.Xna.Framework;
+using System.Drawing;
 
 namespace ChestControl
 {
@@ -59,7 +59,7 @@ namespace ChestControl
             ChestManager.Save(); //save chests
         }
 
-        void OnUpdate(GameTime obj)
+        void OnUpdate()
         {
             if (!Init && Main.worldID > 0)
             {
