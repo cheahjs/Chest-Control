@@ -165,8 +165,8 @@ namespace ChestControl
                 item.SetDefaults(array[i]);
                 RefillItems[i] = item;
             }
-            if (set)
-                setChestItems(RefillItems);
+            //if (set)
+            //    setChestItems(RefillItems);
         }
 
         public void setChestItems(Terraria.Item[] items)
