@@ -15,11 +15,11 @@ namespace ChestControl
 
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRegionChest, "crset", "rchest", "regionsharechest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPublicChest, "cpset", "pchest", "setpublicchest"));
-            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPasswordChest, "clock", "lockchest", "chestlock"));
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPasswordChest, "clock", "lockchest", "chestlock") { DoLog = false });
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRefillChest, "crefill", "refillchest", "chestrefill"));
 
             //everyone can unlock
-            TShockAPI.Commands.ChatCommands.Add(new Command(UnLockChest, "cunlock", "unlockchest", "chestunlock"));
+            TShockAPI.Commands.ChatCommands.Add(new Command(UnLockChest, "cunlock", "unlockchest", "chestunlock") { DoLog = false });
 
             //add permissions to db if not exists
             bool perm = false;
