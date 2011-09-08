@@ -56,7 +56,14 @@ namespace ChestControl
 
         void OnSaveWorld(bool resettime, System.ComponentModel.HandledEventArgs e)
         {
-            ChestManager.Save(); //save chests
+            try
+            {
+                ChestManager.Save(); //save chests
+            }
+            catch (Exception ex) //we don't want the world to fail to save.
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         void OnUpdate()
