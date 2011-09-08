@@ -494,8 +494,12 @@ namespace ChestControl
                         var id = reader.ReadInt16();
                         var slot = reader.ReadByte();
                         var stack = reader.ReadByte();
-                        var itemname = reader.ReadString();
+                        //its pure ASCII bytes, not prefixed with the length.
+                        //var itemname = reader.ReadString();
+                        byte[] itemnamebytes = new byte[e.Length - 4];
+                        reader.Read(itemnamebytes, 0, (e.Length - 4));
                         reader.Close();
+                        var itemname = System.Text.Encoding.ASCII.GetString(itemnamebytes);
                         if (id != -1)
                         {
                             var chest = ChestManager.getChest(id);
