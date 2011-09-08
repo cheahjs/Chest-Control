@@ -40,7 +40,7 @@ namespace ChestControl
 
         public override void Initialize()
         {
-            NetHooks.GetData += new NetHooks.GetDataD(NetHooks_GetData);
+            NetHooks.GetData += NetHooks_GetData;
             ServerHooks.Leave += ServerHooks_Leave;
             GameHooks.Update += OnUpdate;
             WorldHooks.SaveWorld += OnSaveWorld;

@@ -43,7 +43,7 @@ namespace ChestControl
                 }
                 try
                 {
-                    var chest = Chests[int.Parse(args[0])];
+                    var chest = new Chest();
 
                     chest.setPosition(new PointF(int.Parse(args[1]), int.Parse(args[2])));
                     chest.setOwner(args[3]);
@@ -65,6 +65,17 @@ namespace ChestControl
                         //chest dont exists - so reset it
                         chest.reset();
                     }
+                    //check if chest in array didn't move
+                    if (!VerifyChest(chest.getID(), chest.getPosition()))
+                    {
+                        var id = Terraria.Chest.FindChest((int)chest.getPosition().X, (int)chest.getPosition().Y);
+                        if (id != -1)
+                            chest.setID(id);
+                        else
+                            chest.reset();
+                    }
+
+                    Chests[chest.getID()] = chest;
                 }
                 catch
                 {
@@ -95,6 +106,14 @@ namespace ChestControl
                 }
             }
             File.WriteAllLines(ChestSavePath, lines.ToArray());
+        }
+
+        public static bool VerifyChest(int id, PointF pos)
+        {
+            if (Terraria.Chest.FindChest((int)pos.X, (int)pos.Y) != id)
+                return false;
+
+            return true;
         }
     }
 }
