@@ -150,6 +150,8 @@ namespace ChestControl
                 if (!string.IsNullOrEmpty(RefillItems[i].name))
                     list.Add(RefillItems[i].name);
             }
+            if (list.Count == 0)
+                list.Add("");
             return list;
         }
 
