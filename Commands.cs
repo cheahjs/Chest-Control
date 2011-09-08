@@ -119,23 +119,16 @@ namespace ChestControl
             }
             else
             {
-                if (args.Parameters.Count != 1)
+                if (args.Parameters.Count == 1)
                 {
-                    args.Player.SendMessage("You must enter password! Or use \"remove\" as password to remove password.", Color.Red);
-                    return;
+                    if (args.Parameters[0] == "unset" || args.Parameters[0] == "unlock" || args.Parameters[0] == "remove" || args.Parameters[0] == "rm" || args.Parameters[0] == "delete" || args.Parameters[0] == "del")
+                    {
+                        ChestControl.Players[args.Player.Index].setState(SettingState.RefillUnSetting);
+                        args.Player.SendMessage("Open a chest to remove refill.", Color.BlueViolet);
+                    }
                 }
-
-                if (args.Parameters[0] == "unset" || args.Parameters[0] == "unlock" || args.Parameters[0] == "remove" || args.Parameters[0] == "rm" || args.Parameters[0] == "delete" || args.Parameters[0] == "del")
-                {
-                    ChestControl.Players[args.Player.Index].setState(SettingState.PasswordUnSetting);
-                    args.Player.SendMessage("Open a chest to remove password.", Color.BlueViolet);
-                }
-                else
-                {
-                    ChestControl.Players[args.Player.Index].PasswordForChest = args.Parameters[0];
-                    ChestControl.Players[args.Player.Index].setState(SettingState.PasswordSetting);
-                    args.Player.SendMessage("Open a chest to set password.", Color.BlueViolet);
-                }
+                ChestControl.Players[args.Player.Index].setState(SettingState.RefillSetting);
+                args.Player.SendMessage("Open a chest to set refill.", Color.BlueViolet);
             }
         }
 
