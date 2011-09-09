@@ -181,6 +181,9 @@ namespace ChestControl
                 return true;
             }
 
+            if (!player.IsLoggedIn) //if player isn't logged in, and chest is protectect, don't allow access
+                return false;
+
             if (isOwner(player)) //if player is owner then skip checks
             {
                 return true;
