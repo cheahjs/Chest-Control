@@ -94,16 +94,21 @@ namespace ChestControl
             var lines = new List<string>();
             foreach (var chest in Chests)
             {
-                if (Chest.TileIsChest(chest.getPosition()))
+                if (chest != null)
                 {
-                    if (chest.getOwner() != "")
+                    if (Chest.TileIsChest(chest.getPosition()))
                     {
-                        lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}", 
-                            chest.getID(), chest.getPosition().X, chest.getPosition().Y, 
-                            chest.getOwner(), chest.isLocked(), chest.isRegionLocked(), 
-                            chest.getPassword(), chest.IsRefill(), string.Join(",", chest.getRefillItemNames())));
+                        if (chest.getOwner() != "")
+                        {
+                            lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}",
+                                chest.getID(), chest.getPosition().X, chest.getPosition().Y,
+                                chest.getOwner(), chest.isLocked(), chest.isRegionLocked(),
+                                chest.getPassword(), chest.IsRefill(), string.Join(",", chest.getRefillItemNames())));
+                        }
                     }
                 }
+                else
+                    return; //it shouldn't EVER be null
             }
             File.WriteAllLines(ChestSavePath, lines.ToArray());
         }
