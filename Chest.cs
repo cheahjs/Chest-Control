@@ -55,7 +55,7 @@ namespace ChestControl
 
         public void setOwner(CPlayer player)
         {
-            Owner = player.UserAccountName;//player.Name;
+            Owner = TShock.Players[player.Index].UserAccountName;//player.Name;
         }
 
         public string getOwner()
@@ -105,7 +105,7 @@ namespace ChestControl
         public bool isOwner(CPlayer player)
         {
 
-            if (hasOwner() && Owner.Equals(player.UserAccountName))
+            if (hasOwner() && Owner.Equals(TShock.Players[player.Index].UserAccountName))
             {
                 return true;
             }
