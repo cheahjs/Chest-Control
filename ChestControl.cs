@@ -411,7 +411,11 @@ namespace ChestControl
 
                                 if (tplayer.Group.HasPermission("showchestinfo")) //if player should see chest info
                                 {
-                                    player.SendMessage("Chest Owner: " + (chest.getOwner() == "" ? "-None-" : chest.getOwner()) + " || " + "Public: " + (chest.isLocked() ? "No" : "Yes") + " || " + "RegionShare: " + (chest.isRegionLocked() ? "Yes" : "No") + " || " + "Password: " + (chest.getPassword() == "" ? "No" : "Yes"), Color.Yellow);
+                                    player.SendMessage("Chest Owner: " + (chest.getOwner() == "" ? "-None-" : chest.getOwner()) 
+                                        + " || " + "Public: " + (chest.isLocked() ? "No" : "Yes") + " || " + "RegionShare: " 
+                                        + (chest.isRegionLocked() ? "Yes" : "No") + " || " + "Password: " 
+                                        + (chest.getPassword() == "" ? "No" : "Yes") + " || Refill: "
+                                        + (chest.IsRefill() ? "Yes" : "No"), Color.Yellow);
                                 }
 
                                 if (!tplayer.Group.HasPermission("openallchests") && !chest.isOpenFor(player)) //if player doesnt has permission to see inside chest, then break and message
