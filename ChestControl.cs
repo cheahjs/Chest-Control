@@ -466,15 +466,19 @@ namespace ChestControl
                             //dirty fix for finding chest, try to find chest point around
                             if (id == -1)
                             {
-                                id = Terraria.Chest.FindChest(x - 1, y); //search one tile left
-                                if (id == -1)
+                                try
                                 {
-                                    id = Terraria.Chest.FindChest(x - 1, y - 1); //search one tile left and one tile up
+                                    id = Terraria.Chest.FindChest(x - 1, y); //search one tile left
                                     if (id == -1)
                                     {
-                                        id = Terraria.Chest.FindChest(x, y - 1); //search one tile up
+                                        id = Terraria.Chest.FindChest(x - 1, y - 1); //search one tile left and one tile up
+                                        if (id == -1)
+                                        {
+                                            id = Terraria.Chest.FindChest(x, y - 1); //search one tile up
+                                        }
                                     }
                                 }
+                                catch (Exception ex) { Console.WriteLine(ex); }
                             }
 
                             if (id != -1) //if have found chest
