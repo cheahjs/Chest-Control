@@ -57,7 +57,10 @@ namespace ChestControl
                     //provide backwards compatibility
                     if (args.Length == 9)
                         if (bool.Parse(args[7]))
+                        {
+                            chest.setRefill(true);
                             chest.setRefillItems(args[8], true);
+                        }
 
                     //check if chest still exists in world
                     if (!Chest.TileIsChest(chest.getPosition()))
