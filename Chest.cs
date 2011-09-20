@@ -56,7 +56,15 @@ namespace ChestControl
 
         public void SetOwner(CPlayer player)
         {
-            Owner = TShock.Players[player.Index].UserAccountName;//player.Name;
+            var userAccountName = TShock.Players[player.Index].UserAccountName;
+            if (userAccountName != null)
+                Owner = userAccountName;//player.Name;
+            else
+            {
+                Owner = TShock.Players[player.Index].Name;
+                player.SendMessage("Warning, you are not registered.", Color.Red);
+                player.SendMessage("Please register an account and open the chest again to future-proof your protection.", Color.Red);
+            }
         }
 
         public string GetOwner()
