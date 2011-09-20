@@ -107,7 +107,7 @@ namespace ChestControl
                                 {
                                     case SettingState.Setting:
                                         if (chest.HasOwner())
-                                            if (chest.IsOwner(player))
+                                            if (chest.IsOwnerConvert(player))
                                                 player.SendMessage("You already own this chest!", Color.Red);
                                             else
                                             {
@@ -130,7 +130,7 @@ namespace ChestControl
 
                                     case SettingState.RegionSetting:
                                         if (chest.HasOwner())
-                                            if (chest.IsOwner(player))
+                                            if (chest.IsOwnerConvert(player))
                                                 if (chest.IsRegionLocked())
                                                 {
                                                     chest.regionLock(false);
@@ -179,7 +179,7 @@ namespace ChestControl
 
                                     case SettingState.PublicSetting:
                                         if (chest.HasOwner())
-                                            if (chest.IsOwner(player))
+                                            if (chest.IsOwnerConvert(player))
                                                 if (chest.IsLocked())
                                                 {
                                                     chest.UnLock();
@@ -213,7 +213,7 @@ namespace ChestControl
 
                                     case SettingState.Deleting:
                                         if (chest.HasOwner())
-                                            if (chest.IsOwner(player) ||
+                                            if (chest.IsOwnerConvert(player) ||
                                                 tplayer.Group.HasPermission("removechestprotection"))
                                             {
                                                 chest.Reset();
@@ -233,7 +233,7 @@ namespace ChestControl
 
                                     case SettingState.PasswordSetting:
                                         if (chest.HasOwner())
-                                            if (chest.IsOwner(player))
+                                            if (chest.IsOwnerConvert(player))
                                             {
                                                 chest.SetPassword(player.PasswordForChest);
                                                 player.SendMessage("This chest is now protected with password.",
@@ -263,7 +263,7 @@ namespace ChestControl
 
                                     case SettingState.PasswordUnSetting:
                                         if (chest.HasOwner())
-                                            if (chest.IsOwner(player))
+                                            if (chest.IsOwnerConvert(player))
                                             {
                                                 chest.SetPassword("");
                                                 player.SendMessage("This chest password has been removed.", Color.Red);
@@ -282,7 +282,7 @@ namespace ChestControl
 
                                     case SettingState.RefillSetting:
                                         if (chest.HasOwner())
-                                            if (chest.IsOwner(player))
+                                            if (chest.IsOwnerConvert(player))
                                             {
                                                 chest.SetRefill(true);
                                                 player.SendMessage("This chest is will now always refill with items.",
@@ -312,7 +312,7 @@ namespace ChestControl
                                     case SettingState.RefillUnSetting:
                                         if (chest.IsRefill())
                                             if (chest.HasOwner())
-                                                if (chest.IsOwner(player))
+                                                if (chest.IsOwnerConvert(player))
                                                 {
                                                     chest.SetRefill(false);
                                                     player.SendMessage(
@@ -349,7 +349,7 @@ namespace ChestControl
                                                                        Color.Red);
                                                     naggedAboutLock = true;
                                                 }
-                                                else if (chest.IsOwner(player))
+                                                else if (chest.IsOwnerConvert(player))
                                                     player.SendMessage(
                                                         "You are owner of this chest, you dont need to unlock it. If you want to remove password use \"/lockchest remove\".",
                                                         Color.Red);
@@ -450,7 +450,7 @@ namespace ChestControl
                                     if (chest.HasOwner()) //if owned stop removing
                                     {
                                         if (tplayer.Group.HasPermission("removechestprotection") ||
-                                            chest.IsOwner(player))
+                                            chest.IsOwnerConvert(player))
                                             //display more verbose info to player who has permission to remove protection on this chest
                                             player.SendMessage(
                                                 "This chest is protected. To remove it, first remove protection using \"/cunset\" command.",

@@ -104,6 +104,21 @@ namespace ChestControl
             return HasOwner() && Owner.Equals(TShock.Players[player.Index].UserAccountName);
         }
 
+        public bool LegacyIsOwner(CPlayer player)
+        {
+            return HasOwner() && Owner.Equals(TShock.Players[player.Index].Name);
+        }
+
+        public bool IsOwnerConvert(CPlayer player)
+        {
+            if (LegacyIsOwner(player) || IsOwner(player))
+            {
+                SetOwner(player);
+                return true;
+            }
+            return false;
+        }
+
         public bool IsLocked()
         {
             return Locked;
@@ -165,7 +180,7 @@ namespace ChestControl
             if (!player.IsLoggedIn) //if player isn't logged in, and chest is protectect, don't allow access
                 return false;
 
-            if (IsOwner(player)) //if player is owner then skip checks
+            if (IsOwnerConvert(player)) //if player is owner then skip checks
                 return true;
 
             if (HashedPassword != "") //this chest is passworded, so check if user has unlocked this chest
