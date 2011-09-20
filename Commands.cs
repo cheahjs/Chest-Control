@@ -41,6 +41,7 @@ namespace ChestControl
                 permissions.Add("openallchests");
                 permissions.Add("removechestprotection");
                 permissions.Add("showchestinfo");
+                permissions.Add("refillchest");
                 TShock.Groups.AddPermissions("trustedadmin", permissions);
             }
         }
