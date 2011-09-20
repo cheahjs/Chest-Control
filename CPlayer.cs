@@ -15,30 +15,26 @@ namespace ChestControl
         }
 
 
-        public SettingState getState()
+        public SettingState GetState()
         {
             return State;
         }
 
-        public void setState(SettingState state)
+        public void SetState(SettingState state)
         {
             State = state;
         }
 
-        public void unlockedChest(int id)
+        public void UnlockedChest(int id)
         {
             UnlockedChests.Add(id);
             PasswordForChest = "";
         }
 
 
-        public bool hasAccessToChest(int id)
+        public bool HasAccessToChest(int id)
         {
-            if (UnlockedChests.Contains(id))
-            {
-                return true;
-            }
-            return false;
+            return UnlockedChests.Contains(id);
         }
     }
 

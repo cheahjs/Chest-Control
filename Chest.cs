@@ -28,7 +28,7 @@ namespace ChestControl
             RefillItems = new Terraria.Item[20];
         }
 
-        public void reset()
+        public void Reset()
         {
             Owner = "";
             Locked = false;
@@ -38,42 +38,42 @@ namespace ChestControl
             RefillItems = new Terraria.Item[20];
         }
 
-        public void setID(int id)
+        public void SetID(int id)
         {
             ID = id;
         }
 
-        public int getID()
+        public int GetID()
         {
             return ID;
         }
 
-        public void setOwner(string player)
+        public void SetOwner(string player)
         {
             Owner = player;
         }
 
-        public void setOwner(CPlayer player)
+        public void SetOwner(CPlayer player)
         {
             Owner = TShock.Players[player.Index].UserAccountName;//player.Name;
         }
 
-        public string getOwner()
+        public string GetOwner()
         {
             return Owner;
         }
 
-        public void setPosition(PointF position)
+        public void SetPosition(PointF position)
         {
             Position = position;
         }
 
-        public void setPosition(int x, int y)
+        public void SetPosition(int x, int y)
         {
             Position = new PointF(x, y);
         }
 
-        public PointF getPosition()
+        public PointF GetPosition()
         {
             return Position;
         }
@@ -93,7 +93,7 @@ namespace ChestControl
             RegionLock = locking;
         }
 
-        public bool hasOwner()
+        public bool HasOwner()
         {
             if (Owner != "")
             {
@@ -102,23 +102,17 @@ namespace ChestControl
             return false;
         }
 
-        public bool isOwner(CPlayer player)
+        public bool IsOwner(CPlayer player)
         {
-
-            if (hasOwner() && Owner.Equals(TShock.Players[player.Index].UserAccountName))
-            {
-                return true;
-            }
-
-            return false;
+            return HasOwner() && Owner.Equals(TShock.Players[player.Index].UserAccountName);
         }
 
-        public bool isLocked()
+        public bool IsLocked()
         {
             return Locked;
         }
 
-        public bool isRegionLocked()
+        public bool IsRegionLocked()
         {
             return RegionLock;
         }
@@ -128,7 +122,7 @@ namespace ChestControl
             return Refill;
         }
 
-        public void setRefill(bool refill)
+        public void SetRefill(bool refill)
         {
             Refill = refill;
             if (refill)
@@ -137,12 +131,12 @@ namespace ChestControl
                 RefillItems = new Terraria.Item[20];
         }
 
-        public Terraria.Item[] getRefillItems()
+        public Terraria.Item[] GetRefillItems()
         {
             return RefillItems;
         }
 
-        public System.Collections.Generic.List<string> getRefillItemNames()
+        public System.Collections.Generic.List<string> GetRefillItemNames()
         {
             var list = new System.Collections.Generic.List<string>();
             for (int i = 0; i < RefillItems.Length; i++)
@@ -156,7 +150,7 @@ namespace ChestControl
             return list;
         }
 
-        public void setRefillItems(string raw, bool set = false)
+        public void SetRefillItems(string raw, bool set = false)
         {
             var array = raw.Split(',');
             for (int i = 0; i < array.Length && i < 20; i++)
@@ -169,56 +163,47 @@ namespace ChestControl
             //    setChestItems(RefillItems);
         }
 
-        public void setChestItems(Terraria.Item[] items)
+        /*public void SetChestItems(Terraria.Item[] items)
         {
             Terraria.Main.chest[ID].item = items;
-        }
+        }*/
 
-        public bool isOpenFor(CPlayer player)
+        public bool IsOpenFor(CPlayer player)
         {
-            if (!isLocked()) //if chest not locked skip all checks
-            {
+            if (!IsLocked()) //if chest not locked skip all checks
+
                 return true;
-            }
 
             if (!player.IsLoggedIn) //if player isn't logged in, and chest is protectect, don't allow access
                 return false;
 
-            if (isOwner(player)) //if player is owner then skip checks
-            {
+            if (IsOwner(player)) //if player is owner then skip checks
+
                 return true;
-            }
 
             if (HashedPassword != "") //this chest is passworded, so check if user has unlocked this chest
-            {
-                if (player.hasAccessToChest(ID)) //has unlocked this chest
-                {
-                    return true;
-                }
-            }
 
-            if (isRegionLocked()) //if region lock then check region
+                if (player.HasAccessToChest(ID)) //has unlocked this chest
+
+                    return true;
+
+            if (IsRegionLocked()) //if region lock then check region
             {
-                int x = (int)Position.X;
-                int y = (int)Position.Y;
+                var x = (int)Position.X;
+                var y = (int)Position.Y;
 
                 if (TShock.Regions.InArea(x, y)) //if not in area disable region lock
                 {
                     if (TShock.Regions.CanBuild(x, y, TShock.Players[player.Index])) //if can build in area
-                    {
                         return true;
-                    }
                 }
                 else
-                {
                     regionLock(false);
-                }
             }
-
             return false;
         }
 
-        public bool checkPassword(string password)
+        public bool CheckPassword(string password)
         {
             if (HashedPassword.Equals(Utils.SHA1(password)))
             {
@@ -228,7 +213,7 @@ namespace ChestControl
             return false;
         }
 
-        public void setPassword(string password)
+        public void SetPassword(string password)
         {
             if (password == "")
             {
@@ -240,23 +225,20 @@ namespace ChestControl
             }
         }
 
-        public void setPassword(string password, bool checkForHash)
+        public void SetPassword(string password, bool checkForHash)
         {
             if (checkForHash)
             {
-                string pattern = @"^[0-9a-fA-F]{40}$";
+                var pattern = @"^[0-9a-fA-F]{40}$";
                 if (System.Text.RegularExpressions.Regex.IsMatch(password, pattern)) //is SHA1 string
-                {
+
                     HashedPassword = password;
-                }
             }
             else
-            {
-                setPassword(password);
-            }
+                SetPassword(password);
         }
 
-        public string getPassword()
+        public string GetPassword()
         {
             return HashedPassword;
         }
@@ -264,18 +246,13 @@ namespace ChestControl
 
         public static bool TileIsChest(Terraria.Tile tile)
         {
-            if (tile.type == 0x15)
-            {
-                return true;
-            }
-
-            return false;
+            return tile.type == 0x15;
         }
 
         public static bool TileIsChest(PointF position)
         {
-            int x = (int)position.X;
-            int y = (int)position.Y;
+            var x = (int)position.X;
+            var y = (int)position.Y;
 
             return TileIsChest(x, y);
         }

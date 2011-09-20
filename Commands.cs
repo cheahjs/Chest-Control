@@ -1,10 +1,11 @@
-﻿using TShockAPI;
+﻿using System.Linq;
+using TShockAPI;
 using System.Drawing;
 using System.Collections.Generic;
 
 namespace ChestControl
 {
-    class Commands
+    static class Commands
     {
         public static void Load()
         {
@@ -22,90 +23,77 @@ namespace ChestControl
             TShockAPI.Commands.ChatCommands.Add(new Command(UnLockChest, "cunlock", "unlockchest", "chestunlock") { DoLog = false });
 
             //add permissions to db if not exists
-            bool perm = false;
-            foreach (Group group in TShock.Groups.groups)
-            {
-                if (group.Name != "superadmin")
-                {
-                    if (group.HasPermission("protectchest"))
-                    {
-                        perm = true;
-                        break; //we know that someone already has it, so stop
-                    }
-                }
-            }
+            var perm = TShock.Groups.groups.Where(@group => @group.Name != "superadmin").Any(@group => group.HasPermission("protectchest"));
             if (!perm)
             {
-                List<string> permissions = new List<string>();
-                permissions.Add("protectchest");
-                permissions.Add("openallchests");
-                permissions.Add("removechestprotection");
-                permissions.Add("showchestinfo");
-                permissions.Add("refillchest");
+                var permissions = new List<string>
+                                      {
+                                          "protectchest",
+                                          "openallchests",
+                                          "removechestprotection",
+                                          "showchestinfo",
+                                          "refillchest"
+                                      };
                 TShock.Groups.AddPermissions("trustedadmin", permissions);
             }
         }
 
         private static void Set(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.Setting || ChestControl.Players[args.Player.Index].getState() == SettingState.PublicSetting)
+            if (ChestControl.Players[args.Player.Index].GetState() == SettingState.Setting ||
+                ChestControl.Players[args.Player.Index].GetState() == SettingState.PublicSetting)
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
+            else if (args.Parameters.Count == 1)
+                switch (args.Parameters[0])
+                {
+                    case "public":
+                        ChestControl.Players[args.Player.Index].SetState(SettingState.PublicSetting);
+                        args.Player.SendMessage("Open a chest to protect it (public).", Color.BlueViolet);
+                        break;
+                    case "private":
+                        ChestControl.Players[args.Player.Index].SetState(SettingState.Setting);
+                        args.Player.SendMessage("Open a chest to protect it (private).", Color.BlueViolet);
+                        break;
+                    default:
+                        args.Player.SendMessage("Wrong subcommand, use \"public\" or \"private\".", Color.BlueViolet);
+                        break;
+                }
             else
             {
-                if (args.Parameters.Count == 1)
-                {
-                    switch (args.Parameters[0])
-                    {
-                        case "public":
-                            ChestControl.Players[args.Player.Index].setState(SettingState.PublicSetting);
-                            args.Player.SendMessage("Open a chest to protect it (public).", Color.BlueViolet);
-                            break;
-
-                        case "private":
-                            ChestControl.Players[args.Player.Index].setState(SettingState.Setting);
-                            args.Player.SendMessage("Open a chest to protect it (private).", Color.BlueViolet);
-                            break;
-
-                        default:
-                            args.Player.SendMessage("Wrong subcommand, use \"public\" or \"private\".", Color.BlueViolet);
-                            break;
-                    }
-                }
-                else
-                {
-                    ChestControl.Players[args.Player.Index].setState(SettingState.Setting);
-                    args.Player.SendMessage("Open a chest to protect it.", Color.BlueViolet);
-                }
+                ChestControl.Players[args.Player.Index].SetState(SettingState.Setting);
+                args.Player.SendMessage("Open a chest to protect it.", Color.BlueViolet);
             }
         }
 
         private static void SetPasswordChest(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.PasswordSetting || ChestControl.Players[args.Player.Index].getState() == SettingState.PasswordUnSetting)
+            if (ChestControl.Players[args.Player.Index].GetState() == SettingState.PasswordSetting ||
+                ChestControl.Players[args.Player.Index].GetState() == SettingState.PasswordUnSetting)
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
                 if (args.Parameters.Count != 1)
                 {
-                    args.Player.SendMessage("You must enter password! Or use \"remove\" as password to remove password.", Color.Red);
+                    args.Player.SendMessage(
+                        "You must enter password! Or use \"remove\" as password to remove password.", Color.Red);
                     return;
                 }
-
-                if (args.Parameters[0] == "unset" || args.Parameters[0] == "unlock" || args.Parameters[0] == "remove" || args.Parameters[0] == "rm" || args.Parameters[0] == "delete" || args.Parameters[0] == "del")
+                if (args.Parameters[0] == "del" || args.Parameters[0] == "delete" || args.Parameters[0] == "rm" ||
+                    args.Parameters[0] == "remove" || args.Parameters[0] == "unlock" || args.Parameters[0] == "unset")
                 {
-                    ChestControl.Players[args.Player.Index].setState(SettingState.PasswordUnSetting);
+                    ChestControl.Players[args.Player.Index].SetState(SettingState.PasswordUnSetting);
                     args.Player.SendMessage("Open a chest to remove password.", Color.BlueViolet);
                 }
                 else
                 {
                     ChestControl.Players[args.Player.Index].PasswordForChest = args.Parameters[0];
-                    ChestControl.Players[args.Player.Index].setState(SettingState.PasswordSetting);
+                    ChestControl.Players[args.Player.Index].SetState(SettingState.PasswordSetting);
                     args.Player.SendMessage("Open a chest to set password.", Color.BlueViolet);
                 }
             }
@@ -113,35 +101,34 @@ namespace ChestControl
 
         private static void SetRefillChest(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.RefillSetting || ChestControl.Players[args.Player.Index].getState() == SettingState.PasswordUnSetting)
+            if (ChestControl.Players[args.Player.Index].GetState() == SettingState.RefillSetting ||
+                ChestControl.Players[args.Player.Index].GetState() == SettingState.PasswordUnSetting)
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
+            }
+            else if (args.Parameters.Count == 1)
+            {
+                if (args.Parameters[0] == "unset" || args.Parameters[0] == "unlock" || args.Parameters[0] == "remove" ||
+                    args.Parameters[0] == "rm" || args.Parameters[0] == "delete" || args.Parameters[0] == "del")
+                {
+                    ChestControl.Players[args.Player.Index].SetState(SettingState.RefillUnSetting);
+                    args.Player.SendMessage("Open a chest to remove refill.", Color.BlueViolet);
+                }
             }
             else
             {
-                if (args.Parameters.Count == 1)
-                {
-                    if (args.Parameters[0] == "unset" || args.Parameters[0] == "unlock" || args.Parameters[0] == "remove" || args.Parameters[0] == "rm" || args.Parameters[0] == "delete" || args.Parameters[0] == "del")
-                    {
-                        ChestControl.Players[args.Player.Index].setState(SettingState.RefillUnSetting);
-                        args.Player.SendMessage("Open a chest to remove refill.", Color.BlueViolet);
-                    }
-                }
-                else
-                {
-                    ChestControl.Players[args.Player.Index].setState(SettingState.RefillSetting);
-                    args.Player.SendMessage("Open a chest to set refill.", Color.BlueViolet);
-                }
+                ChestControl.Players[args.Player.Index].SetState(SettingState.RefillSetting);
+                args.Player.SendMessage("Open a chest to set refill.", Color.BlueViolet);
             }
         }
 
         private static void UnLockChest(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.UnLocking)
+            if (ChestControl.Players[args.Player.Index].GetState() == SettingState.UnLocking)
             {
                 ChestControl.Players[args.Player.Index].PasswordForChest = "";
-                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
@@ -153,56 +140,56 @@ namespace ChestControl
                 }
 
                 ChestControl.Players[args.Player.Index].PasswordForChest = args.Parameters[0];
-                ChestControl.Players[args.Player.Index].setState(SettingState.UnLocking);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.UnLocking);
                 args.Player.SendMessage("Open a chest to unlock it.", Color.BlueViolet);
             }
         }
 
         private static void SetRegionChest(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.RegionSetting)
+            if (ChestControl.Players[args.Player.Index].GetState() == SettingState.RegionSetting)
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.RegionSetting);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.RegionSetting);
                 args.Player.SendMessage("Open a chest in region to set/unset it region shareable.", Color.BlueViolet);
             }
         }
 
         private static void SetPublicChest(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.PublicSetting)
+            if (ChestControl.Players[args.Player.Index].GetState() == SettingState.PublicSetting)
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.PublicSetting);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.PublicSetting);
                 args.Player.SendMessage("Open a chest to set/unset it public.", Color.BlueViolet);
             }
         }
 
         private static void UnSet(CommandArgs args)
         {
-            if (ChestControl.Players[args.Player.Index].getState() == SettingState.Deleting)
+            if (ChestControl.Players[args.Player.Index].GetState() == SettingState.Deleting)
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.None);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.None);
                 args.Player.SendMessage("You are no longer selecting a chest.", Color.BlueViolet);
             }
             else
             {
-                ChestControl.Players[args.Player.Index].setState(SettingState.Deleting);
+                ChestControl.Players[args.Player.Index].SetState(SettingState.Deleting);
                 args.Player.SendMessage("Open a chest to delete it's protection.", Color.BlueViolet);
             }
         }
 
         private static void CancelSet(CommandArgs args)
         {
-            ChestControl.Players[args.Player.Index].setState(SettingState.None);
+            ChestControl.Players[args.Player.Index].SetState(SettingState.None);
             args.Player.SendMessage("Selection of chest canceled.", Color.BlueViolet);
         }
     }
