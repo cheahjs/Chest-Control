@@ -11,7 +11,7 @@ namespace ChestControl
     [APIVersion(1, 8)]
     public class ChestControl : TerrariaPlugin
     {
-        public static bool Init = false;
+        private static bool Init = false;
         public static CPlayer[] Players = new CPlayer[Main.maxNetPlayers];
 
         public ChestControl(Main game)

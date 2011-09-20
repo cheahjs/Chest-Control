@@ -2,4 +2,4 @@
 *.user
 bin/*
 obj/*
-_Resharper*/*
+_Resharper.ChestControl/*
