@@ -18,6 +18,7 @@ namespace ChestControl
             : base(game)
         {
         }
+
         public override string Name
         {
             get { return "Chest Control"; }
@@ -25,7 +26,7 @@ namespace ChestControl
 
         public override Version Version
         {
-            get { return new Version(2, 2); }
+            get { return new Version(2, 2, 1, 1); }
         }
 
         public override string Author
@@ -54,7 +55,7 @@ namespace ChestControl
             WorldHooks.SaveWorld -= OnSaveWorld;
         }
 
-        void OnSaveWorld(bool resettime, System.ComponentModel.HandledEventArgs e)
+        private void OnSaveWorld(bool resettime, System.ComponentModel.HandledEventArgs e)
         {
             try
             {
@@ -66,33 +67,28 @@ namespace ChestControl
             }
         }
 
-        void OnUpdate()
+        private void OnUpdate()
         {
-            if (!Init && Main.worldID > 0)
-            {
-                Console.WriteLine("Initiating ChestControl...");
-                ChestManager.Load();
-                Commands.Load();
-                for (int i = 0; i < Players.Length; i++)
-                {
-                    Players[i] = new CPlayer(i);
-                }
-                Init = true;
-            }
+            if (Init || Main.worldID <= 0) return;
+            Console.WriteLine("Initiating ChestControl...");
+            ChestManager.Load();
+            Commands.Load();
+            for (var i = 0; i < Players.Length; i++)
+                Players[i] = new CPlayer(i);
+            Init = true;
         }
 
-        void ServerHooks_Leave(int obj)
+        private void ServerHooks_Leave(int obj)
         {
             Players[obj] = new CPlayer(obj);
         }
 
-        void NetHooks_GetData(GetDataEventArgs e)
+        private void NetHooks_GetData(GetDataEventArgs e)
         {
             switch (e.MsgID)
             {
                 case PacketTypes.ChestGetContents:
                     if (!e.Handled)
-                    {
                         using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
                         {
                             var reader = new BinaryReader(data);
@@ -104,7 +100,7 @@ namespace ChestControl
                             var tplayer = TShock.Players[e.Msg.whoAmI];
                             if (id != -1)
                             {
-                                var chest = ChestManager.getChest(id);
+                                var chest = ChestManager.GetChest(id);
                                 var naggedAboutLock = false;
 
                                 switch (player.GetState())
@@ -112,9 +108,7 @@ namespace ChestControl
                                     case SettingState.Setting:
                                         if (chest.HasOwner())
                                             if (chest.IsOwner(player))
-                                            {
                                                 player.SendMessage("You already own this chest!", Color.Red);
-                                            }
                                             else
                                             {
                                                 player.SendMessage("This chest is already owned by someone!", Color.Red);
@@ -136,53 +130,48 @@ namespace ChestControl
 
                                     case SettingState.RegionSetting:
                                         if (chest.HasOwner())
-                                        {
                                             if (chest.IsOwner(player))
-                                            {
                                                 if (chest.IsRegionLocked())
                                                 {
                                                     chest.regionLock(false);
 
-                                                    player.SendMessage("Region share disabled. This chest is now only yours. To fully remove protection use \"cunset\".", Color.Red);
+                                                    player.SendMessage(
+                                                        "Region share disabled. This chest is now only yours. To fully remove protection use \"cunset\".",
+                                                        Color.Red);
+                                                }
+                                                else if (TShock.Regions.InArea(x, y))
+                                                {
+                                                    chest.regionLock(true);
+
+                                                    player.SendMessage(
+                                                        "This chest is now shared between region users. Use this command again to disable it.",
+                                                        Color.Red);
                                                 }
                                                 else
-                                                {
-                                                    if (TShock.Regions.InArea(x, y))
-                                                    {
-                                                        chest.regionLock(true);
-
-                                                        player.SendMessage("This chest is now shared between region users. Use this command again to disable it.", Color.Red);
-                                                    }
-                                                    else
-                                                    {
-                                                        player.SendMessage("You can region share chest only if the chest is inside region!", Color.Red);
-                                                    }
-                                                }
-                                            }
+                                                    player.SendMessage(
+                                                        "You can region share chest only if the chest is inside region!",
+                                                        Color.Red);
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
                                                 naggedAboutLock = true;
                                             }
+                                        else if (TShock.Regions.InArea(x, y))
+                                        {
+                                            chest.SetID(id);
+                                            chest.SetPosition(x, y);
+                                            chest.SetOwner(player);
+                                            chest.Lock();
+                                            chest.regionLock(true);
+
+                                            player.SendMessage(
+                                                "This chest is now shared between region users with you as owner. Use this command again to disable region sharing (You will still be owner).",
+                                                Color.Red);
                                         }
                                         else
-                                        {
-                                            if (TShock.Regions.InArea(x, y))
-                                            {
-                                                chest.SetID(id);
-                                                chest.SetPosition(x, y);
-                                                chest.SetOwner(player);
-                                                chest.Lock();
-                                                chest.regionLock(true);
-
-                                                player.SendMessage("This chest is now shared between region users with you as owner. Use this command again to disable region sharing (You will still be owner).", Color.Red);
-                                            }
-                                            else
-                                            {
-                                                player.SendMessage("You can region share chest only if the chest is inside region!", Color.Red);
-                                            }
-
-                                        }
+                                            player.SendMessage(
+                                                "You can region share chest only if the chest is inside region!",
+                                                Color.Red);
 
                                         //end player setting
                                         player.SetState(SettingState.None);
@@ -190,41 +179,42 @@ namespace ChestControl
 
                                     case SettingState.PublicSetting:
                                         if (chest.HasOwner())
-                                        {
                                             if (chest.IsOwner(player))
-                                            {
                                                 if (chest.IsLocked())
                                                 {
                                                     chest.UnLock();
-                                                    player.SendMessage("This chest is now public! Use \"/cpset\" to set it private.", Color.Red);
+                                                    player.SendMessage(
+                                                        "This chest is now public! Use \"/cpset\" to set it private.",
+                                                        Color.Red);
                                                 }
                                                 else
                                                 {
                                                     chest.Lock();
-                                                    player.SendMessage("This chest is now private! Use \"/cpset\" to set it public.", Color.Red);
+                                                    player.SendMessage(
+                                                        "This chest is now private! Use \"/cpset\" to set it public.",
+                                                        Color.Red);
                                                 }
-                                            }
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
                                                 naggedAboutLock = true;
                                             }
-
-                                        }
                                         else
                                         {
                                             chest.SetID(id);
                                             chest.SetPosition(x, y);
                                             chest.SetOwner(player);
 
-                                            player.SendMessage("This chest is now yours. This chest is public. Use \"/cpset\" to set it private.", Color.Red);
+                                            player.SendMessage(
+                                                "This chest is now yours. This chest is public. Use \"/cpset\" to set it private.",
+                                                Color.Red);
                                         }
                                         break;
 
                                     case SettingState.Deleting:
                                         if (chest.HasOwner())
-                                        {
-                                            if (chest.IsOwner(player) || tplayer.Group.HasPermission("removechestprotection"))
+                                            if (chest.IsOwner(player) ||
+                                                tplayer.Group.HasPermission("removechestprotection"))
                                             {
                                                 chest.Reset();
                                                 player.SendMessage("This chest is no longer yours!", Color.Red);
@@ -234,11 +224,8 @@ namespace ChestControl
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
                                                 naggedAboutLock = true;
                                             }
-                                        }
                                         else
-                                        {
                                             player.SendMessage("This chest is not protected!", Color.Red);
-                                        }
 
                                         //end player setting
                                         player.SetState(SettingState.None);
@@ -246,18 +233,17 @@ namespace ChestControl
 
                                     case SettingState.PasswordSetting:
                                         if (chest.HasOwner())
-                                        {
                                             if (chest.IsOwner(player))
                                             {
                                                 chest.SetPassword(player.PasswordForChest);
-                                                player.SendMessage("This chest is now protected with password.", Color.Red);
+                                                player.SendMessage("This chest is now protected with password.",
+                                                                   Color.Red);
                                             }
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
                                                 naggedAboutLock = true;
                                             }
-                                        }
                                         else
                                         {
                                             chest.SetID(id);
@@ -266,7 +252,9 @@ namespace ChestControl
                                             chest.Lock();
                                             chest.SetPassword(player.PasswordForChest);
 
-                                            player.SendMessage("This chest is now protected with password, with you as owner.", Color.Red);
+                                            player.SendMessage(
+                                                "This chest is now protected with password, with you as owner.",
+                                                Color.Red);
                                         }
 
                                         //end player setting
@@ -275,7 +263,6 @@ namespace ChestControl
 
                                     case SettingState.PasswordUnSetting:
                                         if (chest.HasOwner())
-                                        {
                                             if (chest.IsOwner(player))
                                             {
                                                 chest.SetPassword("");
@@ -286,11 +273,8 @@ namespace ChestControl
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
                                                 naggedAboutLock = true;
                                             }
-                                        }
                                         else
-                                        {
                                             player.SendMessage("This chest is not protected!", Color.Red);
-                                        }
 
                                         //end player setting
                                         player.SetState(SettingState.None);
@@ -298,18 +282,17 @@ namespace ChestControl
 
                                     case SettingState.RefillSetting:
                                         if (chest.HasOwner())
-                                        {
                                             if (chest.IsOwner(player))
                                             {
                                                 chest.SetRefill(true);
-                                                player.SendMessage("This chest is will now always refill with items.", Color.Red);
+                                                player.SendMessage("This chest is will now always refill with items.",
+                                                                   Color.Red);
                                             }
                                             else
                                             {
                                                 player.SendMessage("This chest isn't yours!", Color.Red);
                                                 naggedAboutLock = true;
                                             }
-                                        }
                                         else
                                         {
                                             chest.SetID(id);
@@ -317,7 +300,9 @@ namespace ChestControl
                                             chest.SetOwner(player);
                                             chest.SetRefill(true);
 
-                                            player.SendMessage("This chest is will now always refill with items, with you as owner.", Color.Red);
+                                            player.SendMessage(
+                                                "This chest is will now always refill with items, with you as owner.",
+                                                Color.Red);
                                         }
 
                                         //end player setting
@@ -326,20 +311,18 @@ namespace ChestControl
 
                                     case SettingState.RefillUnSetting:
                                         if (chest.IsRefill())
-                                        {
                                             if (chest.HasOwner())
-                                            {
                                                 if (chest.IsOwner(player))
                                                 {
                                                     chest.SetRefill(false);
-                                                    player.SendMessage("This chest is will no longer refill with items.", Color.Red);
+                                                    player.SendMessage(
+                                                        "This chest is will no longer refill with items.", Color.Red);
                                                 }
                                                 else
                                                 {
                                                     player.SendMessage("This chest isn't yours!", Color.Red);
                                                     naggedAboutLock = true;
                                                 }
-                                            }
                                             else
                                             {
                                                 chest.SetID(id);
@@ -347,9 +330,9 @@ namespace ChestControl
                                                 chest.SetOwner(player);
                                                 chest.SetRefill(false);
 
-                                                player.SendMessage("This chest is will no longer refill with items", Color.Red);
+                                                player.SendMessage("This chest is will no longer refill with items",
+                                                                   Color.Red);
                                             }
-                                        }
                                         else
                                             player.SendMessage("This chest is not refilling!", Color.Red);
 
@@ -359,48 +342,36 @@ namespace ChestControl
 
                                     case SettingState.UnLocking:
                                         if (chest.HasOwner())
-                                        {
                                             if (chest.IsLocked())
-                                            {
                                                 if (chest.GetPassword() == "")
                                                 {
-                                                    player.SendMessage("This chest can't be unlocked with password!", Color.Red);
+                                                    player.SendMessage("This chest can't be unlocked with password!",
+                                                                       Color.Red);
                                                     naggedAboutLock = true;
+                                                }
+                                                else if (chest.IsOwner(player))
+                                                    player.SendMessage(
+                                                        "You are owner of this chest, you dont need to unlock it. If you want to remove password use \"/lockchest remove\".",
+                                                        Color.Red);
+                                                else if (player.HasAccessToChest(chest.GetID()))
+                                                    player.SendMessage("You already have access to this chest!",
+                                                                       Color.Red);
+                                                else if (chest.CheckPassword(player.PasswordForChest))
+                                                {
+                                                    player.UnlockedChest(chest.GetID());
+                                                    player.SendMessage(
+                                                        "Chest unlocked! When you leave game you must unlock it again.",
+                                                        Color.Red);
                                                 }
                                                 else
                                                 {
-                                                    if (chest.IsOwner(player))
-                                                    {
-                                                        player.SendMessage("You are owner of this chest, you dont need to unlock it. If you want to remove password use \"/lockchest remove\".", Color.Red);
-                                                    }
-                                                    else if (player.HasAccessToChest(chest.GetID()))
-                                                    {
-                                                        player.SendMessage("You already have access to this chest!", Color.Red);
-                                                    }
-                                                    else
-                                                    {
-                                                        if (chest.CheckPassword(player.PasswordForChest))
-                                                        {
-                                                            player.UnlockedChest(chest.GetID());
-                                                            player.SendMessage("Chest unlocked! When you leave game you must unlock it again.", Color.Red);
-                                                        }
-                                                        else
-                                                        {
-                                                            player.SendMessage("Wrong password for chest!", Color.Red);
-                                                            naggedAboutLock = true;
-                                                        }
-                                                    }
+                                                    player.SendMessage("Wrong password for chest!", Color.Red);
+                                                    naggedAboutLock = true;
                                                 }
-                                            }
                                             else
-                                            {
                                                 player.SendMessage("This chest is not locked!", Color.Red);
-                                            }
-                                        }
                                         else
-                                        {
                                             player.SendMessage("This chest is not protected!", Color.Red);
-                                        }
 
                                         //end player setting
                                         player.SetState(SettingState.None);
@@ -408,36 +379,34 @@ namespace ChestControl
                                 }
 
                                 if (tplayer.Group.HasPermission("showchestinfo")) //if player should see chest info
-                                {
-                                    player.SendMessage(string.Format("Chest Owner: {0} || Public: {1} || RegionShare: {2} || Password: {3} || Refill: {4}",
-                                        chest.GetOwner() == "" ? "-None-" : chest.GetOwner(),
-                                        chest.IsLocked() ? "No" : "Yes", chest.IsRegionLocked() ? "Yes" : "No",
-                                        chest.GetPassword() == "" ? "No" : "Yes",
-                                        chest.IsRefill() ? "Yes" : "No"), Color.Yellow);
-                                }
+                                    player.SendMessage(
+                                        string.Format(
+                                            "Chest Owner: {0} || Public: {1} || RegionShare: {2} || Password: {3} || Refill: {4}",
+                                            chest.GetOwner() == "" ? "-None-" : chest.GetOwner(),
+                                            chest.IsLocked() ? "No" : "Yes", chest.IsRegionLocked() ? "Yes" : "No",
+                                            chest.GetPassword() == "" ? "No" : "Yes",
+                                            chest.IsRefill() ? "Yes" : "No"), Color.Yellow);
 
-                                if (!tplayer.Group.HasPermission("openallchests") && !chest.IsOpenFor(player)) //if player doesnt has permission to see inside chest, then break and message
+                                if (!tplayer.Group.HasPermission("openallchests") && !chest.IsOpenFor(player))
+                                    //if player doesnt has permission to see inside chest, then break and message
                                 {
                                     e.Handled = true;
                                     if (!naggedAboutLock)
-                                    {
                                         player.SendMessage(
                                             chest.GetPassword() != ""
                                                 ? "This chest is magically locked with password. ( Use \"/cunlock PASSWORD\" to unlock it. )"
                                                 : "This chest is magically locked.", Color.IndianRed);
-                                    }
                                     return;
                                 }
                             }
-                            if (player.GetState() != SettingState.None) //if player is still setting something - end his setting
+                            if (player.GetState() != SettingState.None)
+                                //if player is still setting something - end his setting
                                 player.SetState(SettingState.None);
                         }
-                    }
                     break;
                 case PacketTypes.TileKill:
                 case PacketTypes.Tile:
                     using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
-                    {
                         try
                         {
                             var reader = new BinaryReader(data);
@@ -447,8 +416,8 @@ namespace ChestControl
                                 if (!(type == 0 || type == 4))
                                     return;
                             }
-                            int x = reader.ReadInt32();
-                            int y = reader.ReadInt32();
+                            var x = reader.ReadInt32();
+                            var y = reader.ReadInt32();
                             reader.Close();
 
                             if (Chest.TileIsChest(x, y)) //if is Chest
@@ -459,35 +428,35 @@ namespace ChestControl
 
                                 //dirty fix for finding chest, try to find chest point around
                                 if (id == -1)
-                                {
                                     try
                                     {
                                         id = Terraria.Chest.FindChest(x - 1, y); //search one tile left
                                         if (id == -1)
                                         {
-                                            id = Terraria.Chest.FindChest(x - 1, y - 1); //search one tile left and one tile up
+                                            id = Terraria.Chest.FindChest(x - 1, y - 1);
+                                            //search one tile left and one tile up
                                             if (id == -1)
-                                            {
                                                 id = Terraria.Chest.FindChest(x, y - 1); //search one tile up
-                                            }
                                         }
                                     }
-                                    catch (Exception ex) { Console.WriteLine(ex); }
-                                }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(ex);
+                                    }
 
                                 if (id != -1) //if have found chest
                                 {
-                                    var chest = ChestManager.getChest(id);
-                                    if (chest.HasOwner())//if owned stop removing
+                                    var chest = ChestManager.GetChest(id);
+                                    if (chest.HasOwner()) //if owned stop removing
                                     {
-                                        if (tplayer.Group.HasPermission("removechestprotection") || chest.IsOwner(player)) //display more verbose info to player who has permission to remove protection on this chest
-                                        {
-                                            player.SendMessage("This chest is protected. To remove it, first remove protection using \"/cunset\" command.", Color.Red);
-                                        }
+                                        if (tplayer.Group.HasPermission("removechestprotection") ||
+                                            chest.IsOwner(player))
+                                            //display more verbose info to player who has permission to remove protection on this chest
+                                            player.SendMessage(
+                                                "This chest is protected. To remove it, first remove protection using \"/cunset\" command.",
+                                                Color.Red);
                                         else
-                                        {
                                             player.SendMessage("This chest is protected!", Color.Red);
-                                        }
 
                                         player.SendTileSquare(x, y);
                                         e.Handled = true;
@@ -495,8 +464,10 @@ namespace ChestControl
                                 }
                             }
                         }
-                        catch (Exception ex) { Console.WriteLine(ex); }
-                    }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
                     break;
                 case PacketTypes.ChestItem:
                     using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
@@ -507,13 +478,13 @@ namespace ChestControl
                         var stack = reader.ReadByte();
                         //its pure ASCII bytes, not prefixed with the length.
                         //var itemname = reader.ReadString();
-                        byte[] itemnamebytes = new byte[e.Length - 4];
+                        var itemnamebytes = new byte[e.Length - 4];
                         reader.Read(itemnamebytes, 0, (e.Length - 4));
                         reader.Close();
                         var itemname = System.Text.Encoding.ASCII.GetString(itemnamebytes);
                         if (id != -1)
                         {
-                            var chest = ChestManager.getChest(id);
+                            var chest = ChestManager.GetChest(id);
                             if (chest.IsRefill())
                             {
                                 //this should already stop changes to the chest, "refilling" the chest

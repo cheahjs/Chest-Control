@@ -10,9 +10,10 @@ namespace ChestControl
     {
         public static string SHA1(string input)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(input);
-            var cryptoTransformSHA1 = new SHA1CryptoServiceProvider();
-            string hash = BitConverter.ToString(cryptoTransformSHA1.ComputeHash(buffer)).Replace("-", "");
+            var buffer = Encoding.ASCII.GetBytes(input);
+            string hash;
+            using (var cryptoTransformSHA1 = new SHA1CryptoServiceProvider())
+                hash = BitConverter.ToString(cryptoTransformSHA1.ComputeHash(buffer)).Replace("-", "");
             return hash;
         }
 

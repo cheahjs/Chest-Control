@@ -1,4 +1,5 @@
-﻿using TShockAPI;
+﻿using System.Linq;
+using TShockAPI;
 using System.Drawing;
 
 namespace ChestControl
@@ -95,11 +96,7 @@ namespace ChestControl
 
         public bool HasOwner()
         {
-            if (Owner != "")
-            {
-                return true;
-            }
-            return false;
+            return Owner != "";
         }
 
         public bool IsOwner(CPlayer player)
@@ -125,10 +122,7 @@ namespace ChestControl
         public void SetRefill(bool refill)
         {
             Refill = refill;
-            if (refill)
-                RefillItems = Terraria.Main.chest[ID].item;
-            else
-                RefillItems = new Terraria.Item[20];
+            RefillItems = refill ? Terraria.Main.chest[ID].item : new Terraria.Item[20];
         }
 
         public Terraria.Item[] GetRefillItems()
@@ -138,13 +132,7 @@ namespace ChestControl
 
         public System.Collections.Generic.List<string> GetRefillItemNames()
         {
-            var list = new System.Collections.Generic.List<string>();
-            for (int i = 0; i < RefillItems.Length; i++)
-            {
-                if (RefillItems[i] != null)
-                    if (!string.IsNullOrEmpty(RefillItems[i].name))
-                        list.Add(RefillItems[i].name);
-            }
+            var list = (from t in RefillItems where t != null where !string.IsNullOrEmpty(t.name) select t.name).ToList();
             if (list.Count == 0)
                 list.Add("");
             return list;
@@ -153,7 +141,7 @@ namespace ChestControl
         public void SetRefillItems(string raw, bool set = false)
         {
             var array = raw.Split(',');
-            for (int i = 0; i < array.Length && i < 20; i++)
+            for (var i = 0; i < array.Length && i < 20; i++)
             {
                 var item = new Terraria.Item();
                 item.SetDefaults(array[i]);
@@ -178,13 +166,10 @@ namespace ChestControl
                 return false;
 
             if (IsOwner(player)) //if player is owner then skip checks
-
                 return true;
 
             if (HashedPassword != "") //this chest is passworded, so check if user has unlocked this chest
-
                 if (player.HasAccessToChest(ID)) //has unlocked this chest
-
                     return true;
 
             if (IsRegionLocked()) //if region lock then check region
@@ -205,24 +190,12 @@ namespace ChestControl
 
         public bool CheckPassword(string password)
         {
-            if (HashedPassword.Equals(Utils.SHA1(password)))
-            {
-                return true;
-            }
-
-            return false;
+            return HashedPassword.Equals(Utils.SHA1(password));
         }
 
         public void SetPassword(string password)
         {
-            if (password == "")
-            {
-                HashedPassword = "";
-            }
-            else
-            {
-                HashedPassword = Utils.SHA1(password);
-            }
+            HashedPassword = password == "" ? "" : Utils.SHA1(password);
         }
 
         public void SetPassword(string password, bool checkForHash)
@@ -243,8 +216,7 @@ namespace ChestControl
             return HashedPassword;
         }
 
-
-        public static bool TileIsChest(Terraria.Tile tile)
+        public static bool TileIsChest(Terraria.TileData tile)
         {
             return tile.type == 0x15;
         }
@@ -259,7 +231,7 @@ namespace ChestControl
 
         public static bool TileIsChest(int x, int y)
         {
-            return TileIsChest(Terraria.Main.tile[x, y]);
+            return TileIsChest(Terraria.Main.tile[x, y].Data);
         }
     }
 }

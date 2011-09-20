@@ -13,8 +13,7 @@ namespace ChestControl
         private static string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
         private static string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
 
-
-        public static Chest getChest(int id)
+        public static Chest GetChest(int id)
         {
             return Chests[id];
         }
@@ -31,8 +30,9 @@ namespace ChestControl
                 Chests[i] = new Chest();
 
             var error = false;
-            foreach (var args in File.ReadAllLines(ChestSavePath).Select(line => line.Split('|')).Where(args => args.Length >= 7))
-            {
+            foreach (
+                var args in
+                    File.ReadAllLines(ChestSavePath).Select(line => line.Split('|')).Where(args => args.Length >= 7))
                 try
                 {
                     var chest = new Chest();
@@ -56,27 +56,24 @@ namespace ChestControl
 
                     //check if chest still exists in world
                     if (!Chest.TileIsChest(chest.GetPosition()))
-                    {
                         //chest dont exists - so reset it
                         chest.Reset();
-                    }
                     //check if chest in array didn't move
                     if (!VerifyChest(chest.GetID(), chest.GetPosition()))
                     {
-                        var id = Terraria.Chest.FindChest((int)chest.GetPosition().X, (int)chest.GetPosition().Y);
+                        var id = Terraria.Chest.FindChest((int) chest.GetPosition().X, (int) chest.GetPosition().Y);
                         if (id != -1)
                             chest.SetID(id);
                         else
                             chest.Reset();
                     }
 
-                    Chests[chest.GetID()] = chest;
+                    if (Chests.Length > chest.GetID()) Chests[chest.GetID()] = chest;
                 }
                 catch
                 {
                     error = true;
                 }
-            }
 
             if (error)
                 System.Console.WriteLine(
@@ -87,23 +84,18 @@ namespace ChestControl
         {
             var lines = new List<string>();
             foreach (var chest in Chests)
-            {
-                if (chest != null)
+                if (chest == null)
+                    return; //it shouldn't EVER be null
+                else
                 {
                     if (Chest.TileIsChest(chest.GetPosition()))
-                    {
                         if (chest.GetOwner() != "")
-                        {
                             lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}",
-                                chest.GetID(), chest.GetPosition().X, chest.GetPosition().Y,
-                                chest.GetOwner(), chest.IsLocked(), chest.IsRegionLocked(),
-                                chest.GetPassword(), chest.IsRefill(), string.Join(",", chest.GetRefillItemNames())));
-                        }
-                    }
+                                                    chest.GetID(), chest.GetPosition().X, chest.GetPosition().Y,
+                                                    chest.GetOwner(), chest.IsLocked(), chest.IsRegionLocked(),
+                                                    chest.GetPassword(), chest.IsRefill(),
+                                                    string.Join(",", chest.GetRefillItemNames())));
                 }
-                else
-                    return; //it shouldn't EVER be null
-            }
             File.WriteAllLines(ChestSavePath, lines.ToArray());
         }
 
