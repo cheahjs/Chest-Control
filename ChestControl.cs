@@ -497,5 +497,28 @@ namespace ChestControl
                     break;
             }
         }
+
+        private void UpdateChecker()
+        {
+            string raw;
+            try
+            {
+                raw = new System.Net.WebClient().DownloadString("https://github.com/Deathmax/Chest-Control/raw/master/version.txt");
+                
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            var list = raw.Split('\n');
+            Version version;
+            if (!Version.TryParse(list[0], out version)) return;
+            if (Version.CompareTo(version) >= 0) return;
+            Tools.Broadcast(string.Format("New Chest-Control version : {0}", version), Color.Yellow);
+            if (list.Length > 1)
+                for (var i = 1; i < list.Length; i++)
+                    Tools.Broadcast(list[i], Color.Yellow);
+            Tools.Broadcast("Get the CC download at bit.ly/chestcontroldl");
+        }
     }
 }
