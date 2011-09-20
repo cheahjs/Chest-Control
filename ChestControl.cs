@@ -444,62 +444,66 @@ namespace ChestControl
                 case PacketTypes.Tile:
                     using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
                     {
-                        BinaryReader reader = new BinaryReader(data);
-                        int x;
-                        int y;
-                        if (e.MsgID == PacketTypes.Tile)
+                        try
                         {
-                            var type = reader.ReadByte();
-                            if (!(type == 0 || type == 4))
-                                return;
-                        }
-                        x = reader.ReadInt32();
-                        y = reader.ReadInt32();
-                        reader.Close();
-
-                        if (Chest.TileIsChest(x, y)) //if is Chest
-                        {
-                            var id = Terraria.Chest.FindChest(x, y);
-                            var player = ChestControl.Players[e.Msg.whoAmI];
-                            var tplayer = TShock.Players[e.Msg.whoAmI];
-
-                            //dirty fix for finding chest, try to find chest point around
-                            if (id == -1)
+                            BinaryReader reader = new BinaryReader(data);
+                            int x;
+                            int y;
+                            if (e.MsgID == PacketTypes.Tile)
                             {
-                                try
+                                var type = reader.ReadByte();
+                                if (!(type == 0 || type == 4))
+                                    return;
+                            }
+                            x = reader.ReadInt32();
+                            y = reader.ReadInt32();
+                            reader.Close();
+
+                            if (Chest.TileIsChest(x, y)) //if is Chest
+                            {
+                                var id = Terraria.Chest.FindChest(x, y);
+                                var player = ChestControl.Players[e.Msg.whoAmI];
+                                var tplayer = TShock.Players[e.Msg.whoAmI];
+
+                                //dirty fix for finding chest, try to find chest point around
+                                if (id == -1)
                                 {
-                                    id = Terraria.Chest.FindChest(x - 1, y); //search one tile left
-                                    if (id == -1)
+                                    try
                                     {
-                                        id = Terraria.Chest.FindChest(x - 1, y - 1); //search one tile left and one tile up
+                                        id = Terraria.Chest.FindChest(x - 1, y); //search one tile left
                                         if (id == -1)
                                         {
-                                            id = Terraria.Chest.FindChest(x, y - 1); //search one tile up
+                                            id = Terraria.Chest.FindChest(x - 1, y - 1); //search one tile left and one tile up
+                                            if (id == -1)
+                                            {
+                                                id = Terraria.Chest.FindChest(x, y - 1); //search one tile up
+                                            }
                                         }
                                     }
+                                    catch (Exception ex) { Console.WriteLine(ex); }
                                 }
-                                catch (Exception ex) { Console.WriteLine(ex); }
-                            }
 
-                            if (id != -1) //if have found chest
-                            {
-                                var chest = ChestManager.getChest(id);
-                                if (chest.hasOwner())//if owned stop removing
+                                if (id != -1) //if have found chest
                                 {
-                                    if (tplayer.Group.HasPermission("removechestprotection") || chest.isOwner(player)) //display more verbose info to player who has permission to remove protection on this chest
+                                    var chest = ChestManager.getChest(id);
+                                    if (chest.hasOwner())//if owned stop removing
                                     {
-                                        player.SendMessage("This chest is protected. To remove it, first remove protection using \"/cunset\" command.", Color.Red);
-                                    }
-                                    else
-                                    {
-                                        player.SendMessage("This chest is protected!", Color.Red);
-                                    }
+                                        if (tplayer.Group.HasPermission("removechestprotection") || chest.isOwner(player)) //display more verbose info to player who has permission to remove protection on this chest
+                                        {
+                                            player.SendMessage("This chest is protected. To remove it, first remove protection using \"/cunset\" command.", Color.Red);
+                                        }
+                                        else
+                                        {
+                                            player.SendMessage("This chest is protected!", Color.Red);
+                                        }
 
-                                    player.SendTileSquare(x, y);
-                                    e.Handled = true;
+                                        player.SendTileSquare(x, y);
+                                        e.Handled = true;
+                                    }
                                 }
                             }
                         }
+                        catch (Exception ex) { Console.WriteLine(ex); }
                     }
                     break;
                 case PacketTypes.ChestItem:
