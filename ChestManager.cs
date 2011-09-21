@@ -51,7 +51,7 @@ namespace ChestControl
                         if (bool.Parse(args[7]))
                         {
                             chest.SetRefill(true);
-                            chest.SetRefillItems(args[8], true);
+                            chest.SetRefillItems(args[8]);
                         }
 
                     //check if chest still exists in world

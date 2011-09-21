@@ -161,7 +161,7 @@ namespace ChestControl
             return list;
         }
 
-        public void SetRefillItems(string raw, bool set = false)
+        public void SetRefillItems(string raw)
         {
             var array = raw.Split(',');
             for (var i = 0; i < array.Length && i < 20; i++)
@@ -185,7 +185,7 @@ namespace ChestControl
 
                 return true;
 
-            if (!player.IsLoggedIn) //if player isn't logged in, and chest is protectect, don't allow access
+            if (!player.IsLoggedIn) //if player isn't logged in, and chest is protected, don't allow access
                 return false;
 
             if (IsOwnerConvert(player)) //if player is owner then skip checks
