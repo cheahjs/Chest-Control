@@ -73,6 +73,7 @@ namespace ChestControl
             Console.WriteLine("Initiating ChestControl...");
             ChestManager.Load();
             Commands.Load();
+            new System.Threading.Thread(UpdateChecker).Start();
             for (var i = 0; i < Players.Length; i++)
                 Players[i] = new CPlayer(i);
             Init = true;
