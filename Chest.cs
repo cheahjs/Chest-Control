@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TShockAPI;
 using System.Drawing;
+using Terraria;
 
 namespace ChestControl
 {
@@ -155,7 +157,10 @@ namespace ChestControl
 
         public System.Collections.Generic.List<string> GetRefillItemNames()
         {
-            var list = (from t in RefillItems where t != null where !string.IsNullOrEmpty(t.name) select t.name).ToList();
+            var list = (from t in RefillItems 
+                        where t != null 
+                        where !string.IsNullOrEmpty(t.name) 
+                        select t.name + "=" + t.stack).ToList();
             if (list.Count == 0)
                 list.Add("");
             return list;
