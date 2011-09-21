@@ -1,3 +1,3 @@
-2.2.1.2
+2.2.1.3
 Refill chests no longer have duplicates
-Fixed bug where logged in users could not open chests
+^ This time, really.
