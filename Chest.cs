@@ -63,7 +63,7 @@ namespace ChestControl
             {
                 Owner = TShock.Players[player.Index].Name;
                 player.SendMessage("Warning, you are not registered.", Color.Red);
-                player.SendMessage("Please register an account and open the chest again to future-proof your protection.", Color.Red);
+                //player.SendMessage("Please register an account and open the chest again to future-proof your protection.", Color.Red);
             }
         }
 
@@ -182,10 +182,9 @@ namespace ChestControl
         public bool IsOpenFor(CPlayer player)
         {
             if (!IsLocked()) //if chest not locked skip all checks
-
                 return true;
 
-            if (!player.IsLoggedIn) //if player isn't logged in, and chest is protected, don't allow access
+            if (TShock.Players[player.Index].IsLoggedIn) //if player isn't logged in, and chest is protected, don't allow access
                 return false;
 
             if (IsOwnerConvert(player)) //if player is owner then skip checks

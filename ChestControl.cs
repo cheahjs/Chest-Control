@@ -519,7 +519,7 @@ namespace ChestControl
             if (list.Length > 1)
                 for (var i = 1; i < list.Length; i++)
                     Tools.Broadcast(list[i], Color.Yellow);
-            Tools.Broadcast("Get the CC download at bit.ly/chestcontroldl");
+            Tools.Broadcast("Get the CC download at bit.ly/chestcontroldl", Color.Yellow);
         }
     }
 }
