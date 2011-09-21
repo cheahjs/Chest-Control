@@ -491,7 +491,7 @@ namespace ChestControl
                                 //this should already stop changes to the chest, "refilling" the chest
                                 e.Handled = true;
                                 //but just in case
-                                Main.chest[id].item = chest.GetRefillItems();
+                                //Main.chest[id].item = chest.GetRefillItems();
                             }
                         }
                     }
