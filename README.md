@@ -17,6 +17,8 @@ _/ccset_ - Stops selecting of chest
 
 _/cunlock_  _password_ -  Unlocks and open chest
 
+_/crefill_ - Sets chest to refill - _/crefill_ _remove_ to disable refill
+
 ### Permissions:
 Everyone can use _/cunlock_ command.
 
@@ -27,6 +29,8 @@ _openallchests_ - permission for admins - can open even protected chests, can't 
 _removechestprotection_ - permission for admins - can remove chests protections
 
 _showchestinfo_ - permission for admins - gets info about opened chest
+
+_refillchest_ - permission for admins - can set chests to refill
 
 ### Todo/Ideas:
 - timed access - give player permission to open chest based on time and/or number of accesses
