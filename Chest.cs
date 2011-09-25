@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TShockAPI;
-using System.Drawing;
 using Terraria;
 
 namespace ChestControl
@@ -11,7 +10,7 @@ namespace ChestControl
         protected int ID;
         protected int WorldID;
         protected string Owner;
-        protected PointF Position;
+        protected Vector2 Position;
         protected bool Locked;
         protected bool RegionLock;
         protected bool Refill;
@@ -23,7 +22,7 @@ namespace ChestControl
             ID = -1;
             WorldID = Terraria.Main.worldID;
             Owner = "";
-            Position = new PointF(0, 0);
+            Position = new Vector2(0, 0);
             Locked = false;
             RegionLock = false;
             Refill = false;
@@ -74,17 +73,17 @@ namespace ChestControl
             return Owner;
         }
 
-        public void SetPosition(PointF position)
+        public void SetPosition(Vector2 position)
         {
             Position = position;
         }
 
         public void SetPosition(int x, int y)
         {
-            Position = new PointF(x, y);
+            Position = new Vector2(x, y);
         }
 
-        public PointF GetPosition()
+        public Vector2 GetPosition()
         {
             return Position;
         }
@@ -248,7 +247,7 @@ namespace ChestControl
             return tile.type == 0x15;
         }
 
-        public static bool TileIsChest(PointF position)
+        public static bool TileIsChest(Vector2 position)
         {
             var x = (int)position.X;
             var y = (int)position.Y;

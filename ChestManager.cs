@@ -3,7 +3,6 @@ using Terraria;
 using TShockAPI;
 using System.Collections.Generic;
 using System.IO;
-using System.Drawing;
 
 namespace ChestControl
 {
@@ -37,7 +36,7 @@ namespace ChestControl
                 {
                     var chest = new Chest();
 
-                    chest.SetPosition(new PointF(int.Parse(args[1]), int.Parse(args[2])));
+                    chest.SetPosition(new Vector2(int.Parse(args[1]), int.Parse(args[2])));
                     chest.SetOwner(args[3]);
                     chest.SetID(int.Parse(args[0]));
                     if (bool.Parse(args[4]))
@@ -99,7 +98,7 @@ namespace ChestControl
             File.WriteAllLines(ChestSavePath, lines.ToArray());
         }
 
-        private static bool VerifyChest(int id, PointF pos)
+        private static bool VerifyChest(int id, Vector2 pos)
         {
             return Terraria.Chest.FindChest((int)pos.X, (int)pos.Y) == id;
         }
