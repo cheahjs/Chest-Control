@@ -24,7 +24,7 @@ namespace ChestControl
 
         public override Version Version
         {
-            get { return new Version(2, 2, 1, 3); }
+            get { return new Version(2, 2, 1, 4); }
         }
 
         public override string Author
