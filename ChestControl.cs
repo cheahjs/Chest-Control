@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ChestControl
 {
-    [APIVersion(1, 8)]
+    [APIVersion(1, 9)]
     public class ChestControl : TerrariaPlugin
     {
         private static bool Init = false;
@@ -515,11 +515,11 @@ namespace ChestControl
             Version version;
             if (!Version.TryParse(list[0], out version)) return;
             if (Version.CompareTo(version) >= 0) return;
-            Tools.Broadcast(string.Format("New Chest-Control version : {0}", version), Color.Yellow);
+            TShock.Utils.Broadcast(string.Format("New Chest-Control version : {0}", version), Color.Yellow);
             if (list.Length > 1)
                 for (var i = 1; i < list.Length; i++)
-                    Tools.Broadcast(list[i], Color.Yellow);
-            Tools.Broadcast("Get the CC download at bit.ly/chestcontroldl", Color.Yellow);
+                    TShock.Utils.Broadcast(list[i], Color.Yellow);
+            TShock.Utils.Broadcast("Get the CC download at bit.ly/chestcontroldl", Color.Yellow);
         }
     }
 }
