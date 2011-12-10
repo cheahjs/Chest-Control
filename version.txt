@@ -1,2 +1,2 @@
-2.2.1.4
-Updated to the newest TShock/TerrariaAPI version
+2.2.1.5
+Updated to the 1.1
