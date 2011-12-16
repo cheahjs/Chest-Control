@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ChestControl
 {
-    [APIVersion(1, 9)]
+    [APIVersion(1, 10)]
     public class ChestControl : TerrariaPlugin
     {
         private static bool Init = false;
