@@ -1,2 +1,2 @@
-2.2.1.6
-Updated for 1.1.1
+2.2.1.7
+Update for latest TShock. Fixes issue with tile errors.

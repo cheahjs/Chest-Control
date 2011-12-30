@@ -242,7 +242,7 @@ namespace ChestControl
             return HashedPassword;
         }
 
-        public static bool TileIsChest(Terraria.Tile tile)
+        public static bool TileIsChest(Terraria.TileData tile)
         {
             return tile.type == 0x15;
         }
@@ -257,7 +257,7 @@ namespace ChestControl
 
         public static bool TileIsChest(int x, int y)
         {
-            return TileIsChest(Terraria.Main.tile[x, y]);
+            return TileIsChest(Terraria.Main.tile[x, y].Data);
         }
     }
 }
