@@ -481,22 +481,13 @@ namespace ChestControl
                         short id = reader.ReadInt16();
                         byte slot = reader.ReadByte();
                         byte stack = reader.ReadByte();
-                        //its pure ASCII bytes, not prefixed with the length.
-                        //var itemname = reader.ReadString();
-                        var itemnamebytes = new byte[e.Length - 4];
-                        reader.Read(itemnamebytes, 0, (e.Length - 4));
-                        reader.Close();
-                        string itemname = Encoding.ASCII.GetString(itemnamebytes);
+                        byte prefix = reader.ReadByte();
+                        short type = reader.ReadByte();
                         if (id != -1)
                         {
                             Chest chest = ChestManager.GetChest(id);
                             if (chest.IsRefill())
-                            {
-                                //this should already stop changes to the chest, "refilling" the chest
                                 e.Handled = true;
-                                //but just in case
-                                //Main.chest[id].item = chest.GetRefillItems();
-                            }
                         }
                     }
                     break;
