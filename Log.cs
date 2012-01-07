@@ -11,12 +11,12 @@ namespace ChestControl
 {
     static class Log
     {
-        private static string filename;
+        private static string fileName;
         private static StreamWriter logWriter;
 
         public static void Initialize(string filename, bool clear)
         {
-            filename = filename;
+            fileName = filename;
             logWriter = new StreamWriter(filename, !clear);
         }
 
