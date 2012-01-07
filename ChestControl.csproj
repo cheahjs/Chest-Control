@@ -61,6 +61,7 @@
     <Compile Include="Chest.cs" />
     <Compile Include="ChestControl.cs" />
     <Compile Include="ChestManager.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="CPlayer.cs" />

@@ -12,6 +12,7 @@ namespace ChestControl
         private static readonly Chest[] Chests = new Chest[Main.maxChests];
         private static readonly string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
         private static readonly string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
+        public static readonly string ChestLogPath = Path.Combine(ChestControlDirectory, "log.txt");
 
         public static Chest GetChest(int id)
         {
@@ -76,8 +77,7 @@ namespace ChestControl
                 }
 
             if (error)
-                Console.WriteLine(
-                    "Failed to load some chests data, corresponding chests will be left unprotected.");
+                Log.Write("Failed to load some chests data, corresponding chests will be left unprotected.", LogLevel.Error);
         }
 
         public static void Save()

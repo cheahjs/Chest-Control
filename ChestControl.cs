@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
 using Hooks;
 using TShockAPI;
@@ -47,6 +46,7 @@ namespace ChestControl
             ServerHooks.Leave += ServerHooks_Leave;
             GameHooks.Update += OnUpdate;
             WorldHooks.SaveWorld += OnSaveWorld;
+            Log.Initialize(ChestManager.ChestLogPath, false);
         }
 
         protected override void Dispose(bool disposing)
@@ -67,14 +67,14 @@ namespace ChestControl
             }
             catch (Exception ex) //we don't want the world to fail to save.
             {
-                Console.WriteLine(ex);
+                Log.Write(ex.ToString(), LogLevel.Error);
             }
         }
 
         private void OnUpdate()
         {
             if (Init || Main.worldID <= 0) return;
-            Console.WriteLine("Initiating ChestControl...");
+            Log.Write("Initiating ChestControl...", LogLevel.Info);
             ChestManager.Load();
             Commands.Load();
             new Thread(UpdateChecker).Start();
@@ -446,7 +446,7 @@ namespace ChestControl
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine(ex);
+                                        Log.Write(ex.ToString(), LogLevel.Error);
                                     }
 
                                 if (id != -1) //if have found chest
@@ -471,7 +471,7 @@ namespace ChestControl
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex);
+                            Log.Write(ex.ToString(), LogLevel.Error);
                         }
                     break;
                 case PacketTypes.ChestItem:
