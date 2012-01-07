@@ -489,17 +489,17 @@ namespace ChestControl
                             Chest chest = ChestManager.GetChest(id);
                             if (chest.IsRefill())
                                 e.Handled = true;
-                        }
-                        if (!e.Handled)
-                        {
-                            var item = Main.chest[id].item[slot];
-                            var newitem = new Item();
-                            newitem.netDefaults(type);
-                            newitem.Prefix(prefix);
-                            newitem.AffixName();
-                            Log.Write(string.Format("{0}({1}) in slot {2} in chest at {3}x{4} was modified to {5}({6}) by {7}",
-                                item.name, item.stack, slot, Main.chest[id].x, Main.chest[id].y, newitem.name, stack, TShock.Players[e.Msg.whoAmI].UserAccountName),
-                                LogLevel.Info, false);
+                            if (!e.Handled)
+                            {
+                                var item = Main.chest[id].item[slot];
+                                var newitem = new Item();
+                                newitem.netDefaults(type);
+                                newitem.Prefix(prefix);
+                                newitem.AffixName();
+                                Log.Write(string.Format("{0}({1}) in slot {2} in chest at {3}x{4} was modified to {5}({6}) by {7}",
+                                    item.name, item.stack, slot, Main.chest[id].x, Main.chest[id].y, newitem.name, stack, TShock.Players[e.Msg.whoAmI].UserAccountName),
+                                    LogLevel.Info, false);
+                            }
                         }
                     }
                     break;
