@@ -1,33 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TShockAPI;
 using Terraria;
 
 namespace ChestControl
 {
-    class Chest
+    internal class Chest
     {
+        private string HashedPassword;
         protected int ID;
-        protected int WorldID;
+        protected bool Locked;
         protected string Owner;
         protected Vector2 Position;
-        protected bool Locked;
-        protected bool RegionLock;
         protected bool Refill;
-        private string HashedPassword;
-        protected Terraria.Item[] RefillItems;
+        protected Item[] RefillItems;
+        protected bool RegionLock;
+        protected int WorldID;
 
         public Chest()
         {
             ID = -1;
-            WorldID = Terraria.Main.worldID;
+            WorldID = Main.worldID;
             Owner = "";
             Position = new Vector2(0, 0);
             Locked = false;
             RegionLock = false;
             Refill = false;
             HashedPassword = "";
-            RefillItems = new Terraria.Item[20];
+            RefillItems = new Item[20];
         }
 
         public void Reset()
@@ -37,7 +38,7 @@ namespace ChestControl
             RegionLock = false;
             Refill = false;
             HashedPassword = "";
-            RefillItems = new Terraria.Item[20];
+            RefillItems = new Item[20];
         }
 
         public void SetID(int id)
@@ -57,9 +58,9 @@ namespace ChestControl
 
         public void SetOwner(CPlayer player)
         {
-            var userAccountName = TShock.Players[player.Index].UserAccountName;
+            string userAccountName = TShock.Players[player.Index].UserAccountName;
             if (userAccountName != null)
-                Owner = userAccountName;//player.Name;
+                Owner = userAccountName; //player.Name;
             else
             {
                 Owner = TShock.Players[player.Index].Name;
@@ -146,20 +147,20 @@ namespace ChestControl
         public void SetRefill(bool refill)
         {
             Refill = refill;
-            RefillItems = refill ? Terraria.Main.chest[ID].item : new Terraria.Item[20];
+            RefillItems = refill ? Main.chest[ID].item : new Item[20];
         }
 
-        public Terraria.Item[] GetRefillItems()
+        public Item[] GetRefillItems()
         {
             return RefillItems;
         }
 
-        public System.Collections.Generic.List<string> GetRefillItemNames()
+        public List<string> GetRefillItemNames()
         {
-            var list = (from t in RefillItems 
-                        where t != null 
-                        where !string.IsNullOrEmpty(t.name) 
-                        select t.name + "=" + t.stack).ToList();
+            List<string> list = (from t in RefillItems
+                where t != null
+                where !string.IsNullOrEmpty(t.name)
+                select t.name + "=" + t.stack).ToList();
             if (list.Count == 0)
                 list.Add("");
             return list;
@@ -167,10 +168,10 @@ namespace ChestControl
 
         public void SetRefillItems(string raw)
         {
-            var array = raw.Split(',');
-            for (var i = 0; i < array.Length && i < 20; i++)
+            string[] array = raw.Split(',');
+            for (int i = 0; i < array.Length && i < 20; i++)
             {
-                var item = new Terraria.Item();
+                var item = new Item();
                 item.SetDefaults(array[i]);
                 RefillItems[i] = item;
             }
@@ -200,8 +201,8 @@ namespace ChestControl
 
             if (IsRegionLocked()) //if region lock then check region
             {
-                var x = (int)Position.X;
-                var y = (int)Position.Y;
+                var x = (int) Position.X;
+                var y = (int) Position.Y;
 
                 if (TShock.Regions.InArea(x, y)) //if not in area disable region lock
                 {
@@ -228,8 +229,8 @@ namespace ChestControl
         {
             if (checkForHash)
             {
-                var pattern = @"^[0-9a-fA-F]{40}$";
-                if (System.Text.RegularExpressions.Regex.IsMatch(password, pattern)) //is SHA1 string
+                string pattern = @"^[0-9a-fA-F]{40}$";
+                if (Regex.IsMatch(password, pattern)) //is SHA1 string
 
                     HashedPassword = password;
             }
@@ -242,22 +243,22 @@ namespace ChestControl
             return HashedPassword;
         }
 
-        public static bool TileIsChest(Terraria.TileData tile)
+        public static bool TileIsChest(TileData tile)
         {
             return tile.type == 0x15;
         }
 
         public static bool TileIsChest(Vector2 position)
         {
-            var x = (int)position.X;
-            var y = (int)position.Y;
+            var x = (int) position.X;
+            var y = (int) position.Y;
 
             return TileIsChest(x, y);
         }
 
         public static bool TileIsChest(int x, int y)
         {
-            return TileIsChest(Terraria.Main.tile[x, y].Data);
+            return TileIsChest(Main.tile[x, y].Data);
         }
     }
 }

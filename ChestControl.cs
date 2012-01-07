@@ -1,15 +1,19 @@
-﻿using Terraria;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading;
 using Hooks;
 using TShockAPI;
-using System;
-using System.IO;
+using Terraria;
 
 namespace ChestControl
 {
     [APIVersion(1, 10)]
     public class ChestControl : TerrariaPlugin
     {
-        private static bool Init = false;
+        private static bool Init;
         public static CPlayer[] Players = new CPlayer[Main.maxNetPlayers];
 
         public ChestControl(Main game)
@@ -55,7 +59,7 @@ namespace ChestControl
             base.Dispose(disposing);
         }
 
-        private void OnSaveWorld(bool resettime, System.ComponentModel.HandledEventArgs e)
+        private void OnSaveWorld(bool resettime, HandledEventArgs e)
         {
             try
             {
@@ -73,8 +77,8 @@ namespace ChestControl
             Console.WriteLine("Initiating ChestControl...");
             ChestManager.Load();
             Commands.Load();
-            new System.Threading.Thread(UpdateChecker).Start();
-            for (var i = 0; i < Players.Length; i++)
+            new Thread(UpdateChecker).Start();
+            for (int i = 0; i < Players.Length; i++)
                 Players[i] = new CPlayer(i);
             Init = true;
         }
@@ -93,16 +97,16 @@ namespace ChestControl
                         using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
                         {
                             var reader = new BinaryReader(data);
-                            var x = reader.ReadInt32();
-                            var y = reader.ReadInt32();
+                            int x = reader.ReadInt32();
+                            int y = reader.ReadInt32();
                             reader.Close();
-                            var id = Terraria.Chest.FindChest(x, y);
-                            var player = Players[e.Msg.whoAmI];
-                            var tplayer = TShock.Players[e.Msg.whoAmI];
+                            int id = Terraria.Chest.FindChest(x, y);
+                            CPlayer player = Players[e.Msg.whoAmI];
+                            TSPlayer tplayer = TShock.Players[e.Msg.whoAmI];
                             if (id != -1)
                             {
-                                var chest = ChestManager.GetChest(id);
-                                var naggedAboutLock = false;
+                                Chest chest = ChestManager.GetChest(id);
+                                bool naggedAboutLock = false;
 
                                 switch (player.GetState())
                                 {
@@ -238,7 +242,7 @@ namespace ChestControl
                                             {
                                                 chest.SetPassword(player.PasswordForChest);
                                                 player.SendMessage("This chest is now protected with password.",
-                                                                   Color.Red);
+                                                    Color.Red);
                                             }
                                             else
                                             {
@@ -287,7 +291,7 @@ namespace ChestControl
                                             {
                                                 chest.SetRefill(true);
                                                 player.SendMessage("This chest is will now always refill with items.",
-                                                                   Color.Red);
+                                                    Color.Red);
                                             }
                                             else
                                             {
@@ -332,7 +336,7 @@ namespace ChestControl
                                                 chest.SetRefill(false);
 
                                                 player.SendMessage("This chest is will no longer refill with items",
-                                                                   Color.Red);
+                                                    Color.Red);
                                             }
                                         else
                                             player.SendMessage("This chest is not refilling!", Color.Red);
@@ -347,7 +351,7 @@ namespace ChestControl
                                                 if (chest.GetPassword() == "")
                                                 {
                                                     player.SendMessage("This chest can't be unlocked with password!",
-                                                                       Color.Red);
+                                                        Color.Red);
                                                     naggedAboutLock = true;
                                                 }
                                                 else if (chest.IsOwnerConvert(player))
@@ -356,7 +360,7 @@ namespace ChestControl
                                                         Color.Red);
                                                 else if (player.HasAccessToChest(chest.GetID()))
                                                     player.SendMessage("You already have access to this chest!",
-                                                                       Color.Red);
+                                                        Color.Red);
                                                 else if (chest.CheckPassword(player.PasswordForChest))
                                                 {
                                                     player.UnlockedChest(chest.GetID());
@@ -413,19 +417,19 @@ namespace ChestControl
                             var reader = new BinaryReader(data);
                             if (e.MsgID == PacketTypes.Tile)
                             {
-                                var type = reader.ReadByte();
+                                byte type = reader.ReadByte();
                                 if (!(type == 0 || type == 4))
                                     return;
                             }
-                            var x = reader.ReadInt32();
-                            var y = reader.ReadInt32();
+                            int x = reader.ReadInt32();
+                            int y = reader.ReadInt32();
                             reader.Close();
 
                             if (Chest.TileIsChest(x, y)) //if is Chest
                             {
-                                var id = Terraria.Chest.FindChest(x, y);
-                                var player = Players[e.Msg.whoAmI];
-                                var tplayer = TShock.Players[e.Msg.whoAmI];
+                                int id = Terraria.Chest.FindChest(x, y);
+                                CPlayer player = Players[e.Msg.whoAmI];
+                                TSPlayer tplayer = TShock.Players[e.Msg.whoAmI];
 
                                 //dirty fix for finding chest, try to find chest point around
                                 if (id == -1)
@@ -447,7 +451,7 @@ namespace ChestControl
 
                                 if (id != -1) //if have found chest
                                 {
-                                    var chest = ChestManager.GetChest(id);
+                                    Chest chest = ChestManager.GetChest(id);
                                     if (chest.HasOwner()) //if owned stop removing
                                     {
                                         if (tplayer.Group.HasPermission("removechestprotection") ||
@@ -474,18 +478,18 @@ namespace ChestControl
                     using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
                     {
                         var reader = new BinaryReader(data);
-                        var id = reader.ReadInt16();
-                        var slot = reader.ReadByte();
-                        var stack = reader.ReadByte();
+                        short id = reader.ReadInt16();
+                        byte slot = reader.ReadByte();
+                        byte stack = reader.ReadByte();
                         //its pure ASCII bytes, not prefixed with the length.
                         //var itemname = reader.ReadString();
                         var itemnamebytes = new byte[e.Length - 4];
                         reader.Read(itemnamebytes, 0, (e.Length - 4));
                         reader.Close();
-                        var itemname = System.Text.Encoding.ASCII.GetString(itemnamebytes);
+                        string itemname = Encoding.ASCII.GetString(itemnamebytes);
                         if (id != -1)
                         {
-                            var chest = ChestManager.GetChest(id);
+                            Chest chest = ChestManager.GetChest(id);
                             if (chest.IsRefill())
                             {
                                 //this should already stop changes to the chest, "refilling" the chest
@@ -504,20 +508,19 @@ namespace ChestControl
             string raw;
             try
             {
-                raw = new System.Net.WebClient().DownloadString("https://github.com/Deathmax/Chest-Control/raw/master/version.txt");
-                
+                raw = new WebClient().DownloadString("https://github.com/Deathmax/Chest-Control/raw/master/version.txt");
             }
             catch (Exception)
             {
                 return;
             }
-            var list = raw.Split('\n');
+            string[] list = raw.Split('\n');
             Version version;
             if (!Version.TryParse(list[0], out version)) return;
             if (Version.CompareTo(version) >= 0) return;
             TShock.Utils.Broadcast(string.Format("New Chest-Control version : {0}", version), Color.Yellow);
             if (list.Length > 1)
-                for (var i = 1; i < list.Length; i++)
+                for (int i = 1; i < list.Length; i++)
                     TShock.Utils.Broadcast(list[i], Color.Yellow);
             TShock.Utils.Broadcast("Get the CC download at bit.ly/chestcontroldl", Color.Yellow);
         }

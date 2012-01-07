@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 using TShockAPI;
 
 namespace ChestControl
 {
-    static class Utils
+    internal static class Utils
     {
         public static string SHA1(string input)
         {
-            var buffer = Encoding.ASCII.GetBytes(input);
+            byte[] buffer = Encoding.ASCII.GetBytes(input);
             string hash;
             using (var cryptoTransformSHA1 = new SHA1CryptoServiceProvider())
                 hash = BitConverter.ToString(cryptoTransformSHA1.ComputeHash(buffer)).Replace("-", "");

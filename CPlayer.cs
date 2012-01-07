@@ -1,12 +1,12 @@
-﻿using TShockAPI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TShockAPI;
 
 namespace ChestControl
 {
     public class CPlayer : TSPlayer
     {
-        protected SettingState State = SettingState.None;
         public string PasswordForChest = "";
+        protected SettingState State = SettingState.None;
         protected List<int> UnlockedChests = new List<int>();
 
         public CPlayer(int index)

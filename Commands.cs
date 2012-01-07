@@ -1,10 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TShockAPI;
-using System.Collections.Generic;
 
 namespace ChestControl
 {
-    static class Commands
+    internal static class Commands
     {
         public static void Load()
         {
@@ -15,14 +15,14 @@ namespace ChestControl
 
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetRegionChest, "crset", "rchest", "regionsharechest"));
             TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPublicChest, "cpset", "pchest", "setpublicchest"));
-            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPasswordChest, "clock", "lockchest", "chestlock") { DoLog = false });
+            TShockAPI.Commands.ChatCommands.Add(new Command("protectchest", SetPasswordChest, "clock", "lockchest", "chestlock") {DoLog = false});
             TShockAPI.Commands.ChatCommands.Add(new Command("refillchest", SetRefillChest, "crefill", "refillchest", "chestrefill"));
 
             //everyone can unlock
-            TShockAPI.Commands.ChatCommands.Add(new Command(UnLockChest, "cunlock", "unlockchest", "chestunlock") { DoLog = false });
+            TShockAPI.Commands.ChatCommands.Add(new Command(UnLockChest, "cunlock", "unlockchest", "chestunlock") {DoLog = false});
 
             //add permissions to db if not exists
-            var perm = TShock.Groups.groups.Where(@group => @group.Name != "superadmin").Any(@group => group.HasPermission("protectchest"));
+            bool perm = TShock.Groups.groups.Where(@group => @group.Name != "superadmin").Any(@group => group.HasPermission("protectchest"));
             if (!perm)
             {
                 var permissions = new List<string>

@@ -1,16 +1,17 @@
-﻿using System.Linq;
-using Terraria;
-using TShockAPI;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using TShockAPI;
+using Terraria;
 
 namespace ChestControl
 {
-    class ChestManager
+    internal class ChestManager
     {
-        private static Chest[] Chests = new Chest[Main.maxChests];
-        private static string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
-        private static string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
+        private static readonly Chest[] Chests = new Chest[Main.maxChests];
+        private static readonly string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
+        private static readonly string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
 
         public static Chest GetChest(int id)
         {
@@ -25,10 +26,10 @@ namespace ChestControl
             if (!File.Exists(ChestSavePath))
                 File.Create(ChestSavePath).Close();
 
-            for (var i = 0; i < Chests.Length; i++)
+            for (int i = 0; i < Chests.Length; i++)
                 Chests[i] = new Chest();
 
-            var error = false;
+            bool error = false;
             foreach (
                 var args in
                     File.ReadAllLines(ChestSavePath).Select(line => line.Split('|')).Where(args => args.Length >= 7))
@@ -60,7 +61,7 @@ namespace ChestControl
                     //check if chest in array didn't move
                     if (!VerifyChest(chest.GetID(), chest.GetPosition()))
                     {
-                        var id = Terraria.Chest.FindChest((int) chest.GetPosition().X, (int) chest.GetPosition().Y);
+                        int id = Terraria.Chest.FindChest((int) chest.GetPosition().X, (int) chest.GetPosition().Y);
                         if (id != -1)
                             chest.SetID(id);
                         else
@@ -75,14 +76,14 @@ namespace ChestControl
                 }
 
             if (error)
-                System.Console.WriteLine(
+                Console.WriteLine(
                     "Failed to load some chests data, corresponding chests will be left unprotected.");
         }
 
         public static void Save()
         {
             var lines = new List<string>();
-            foreach (var chest in Chests)
+            foreach (Chest chest in Chests)
                 if (chest == null)
                     return; //it shouldn't EVER be null
                 else
@@ -90,17 +91,17 @@ namespace ChestControl
                     if (Chest.TileIsChest(chest.GetPosition()))
                         if (chest.GetOwner() != "")
                             lines.Add(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}",
-                                                    chest.GetID(), chest.GetPosition().X, chest.GetPosition().Y,
-                                                    chest.GetOwner(), chest.IsLocked(), chest.IsRegionLocked(),
-                                                    chest.GetPassword(), chest.IsRefill(),
-                                                    string.Join(",", chest.GetRefillItemNames())));
+                                chest.GetID(), chest.GetPosition().X, chest.GetPosition().Y,
+                                chest.GetOwner(), chest.IsLocked(), chest.IsRegionLocked(),
+                                chest.GetPassword(), chest.IsRefill(),
+                                string.Join(",", chest.GetRefillItemNames())));
                 }
             File.WriteAllLines(ChestSavePath, lines.ToArray());
         }
 
         private static bool VerifyChest(int id, Vector2 pos)
         {
-            return Terraria.Chest.FindChest((int)pos.X, (int)pos.Y) == id;
+            return Terraria.Chest.FindChest((int) pos.X, (int) pos.Y) == id;
         }
     }
 }
