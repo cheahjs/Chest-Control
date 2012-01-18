@@ -9,7 +9,7 @@ using Terraria;
 
 namespace ChestControl
 {
-    [APIVersion(1, 10)]
+    [APIVersion(1, 11)]
     public class ChestControl : TerrariaPlugin
     {
         private static bool Init;
