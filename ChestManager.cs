@@ -10,7 +10,7 @@ namespace ChestControl
     internal class ChestManager
     {
         private static readonly Chest[] Chests = new Chest[Main.maxChests];
-        private static readonly string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
+        public static readonly string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
         private static readonly string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
         public static readonly string ChestLogPath = Path.Combine(ChestControlDirectory, "log.txt");
 
