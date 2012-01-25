@@ -11,7 +11,7 @@ namespace ChestControl
     {
         private static readonly Chest[] Chests = new Chest[Main.maxChests];
         public static readonly string ChestControlDirectory = Path.Combine(TShock.SavePath, "chestcontrol");
-        private static readonly string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
+        public static string ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
         public static readonly string ChestLogPath = Path.Combine(ChestControlDirectory, "log.txt");
 
         public static Chest GetChest(int id)
@@ -21,6 +21,7 @@ namespace ChestControl
 
         public static void Load()
         {
+            ChestSavePath = Path.Combine(ChestControlDirectory, Main.worldID + ".txt");
             if (!Directory.Exists(ChestControlDirectory))
                 Directory.CreateDirectory(ChestControlDirectory);
 

@@ -49,13 +49,6 @@ namespace ChestControl
             WorldHooks.SaveWorld += OnSaveWorld;
             if (!Directory.Exists(ChestManager.ChestControlDirectory))
                 Directory.CreateDirectory(ChestManager.ChestControlDirectory);
-            Log.Initialize(ChestManager.ChestLogPath, false);
-            Log.Write("Initiating ChestControl...", LogLevel.Info);
-            ChestManager.Load();
-            Commands.Load();
-            new Thread(UpdateChecker).Start();
-            for (int i = 0; i < Players.Length; i++)
-                Players[i] = new CPlayer(i);
         }
 
         protected override void Dispose(bool disposing)
@@ -82,6 +75,14 @@ namespace ChestControl
 
         private void OnUpdate()
         {
+            if (Init) return;
+            Log.Initialize(ChestManager.ChestLogPath, false);
+            Log.Write("Initiating ChestControl...", LogLevel.Info);
+            ChestManager.Load();
+            Commands.Load();
+            new Thread(UpdateChecker).Start();
+            for (int i = 0; i < Players.Length; i++)
+                Players[i] = new CPlayer(i);
         }
 
         private void ServerHooks_Leave(int obj)
