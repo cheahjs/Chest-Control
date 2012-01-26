@@ -1,2 +1,2 @@
-2.2.1.7
-Update for latest TShock. Fixes issue with tile errors.
+2.2.2.1
+Update to 1.1.2. Fixes issue with chest protection not being loaded/saved properly.
