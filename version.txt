@@ -1,2 +1,2 @@
-2.2.2.1
+2.2.2.2
 Update to 1.1.2. Fixes issue with chest protection not being loaded/saved properly.

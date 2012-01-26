@@ -28,7 +28,7 @@ namespace ChestControl
 
         public override Version Version
         {
-            get { return new Version(2, 2, 2, 1); }
+            get { return new Version(2, 2, 2, 2); }
         }
 
         public override string Author
@@ -83,6 +83,7 @@ namespace ChestControl
             new Thread(UpdateChecker).Start();
             for (int i = 0; i < Players.Length; i++)
                 Players[i] = new CPlayer(i);
+            Init = true;
         }
 
         private void ServerHooks_Leave(int obj)
