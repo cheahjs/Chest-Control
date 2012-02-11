@@ -1,2 +1,3 @@
-2.2.2.2
+2.2.2.5
+Update: Converted from text file to tshock database
 Update to 1.1.2. Fixes issue with chest protection not being loaded/saved properly.

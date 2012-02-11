@@ -13,7 +13,9 @@ namespace ChestControl
     public class ChestControl : TerrariaPlugin
     {
         private static bool Init;
+        public static readonly string ChestLogPath = Path.Combine( TShock.SavePath, "log_ChestControl.txt" );
         public static CPlayer[] Players = new CPlayer[Main.maxNetPlayers];
+        public static ChestDbManager chestDbManager;
 
         public ChestControl(Main game)
             : base(game)
@@ -28,12 +30,12 @@ namespace ChestControl
 
         public override Version Version
         {
-            get { return new Version(2, 2, 2, 2); }
+            get { return new Version(2, 2, 2, 5); }
         }
 
         public override string Author
         {
-            get { return "Deathmax, Natrim"; }
+            get { return "Deathmax, Natrim, _Jon"; }
         }
 
         public override string Description
@@ -43,16 +45,16 @@ namespace ChestControl
 
         public override void Initialize()
         {
+            GameHooks.Initialize += OnInitialize;
             NetHooks.GetData += NetHooks_GetData;
             ServerHooks.Leave += ServerHooks_Leave;
             GameHooks.Update += OnUpdate;
             WorldHooks.SaveWorld += OnSaveWorld;
-            if (!Directory.Exists(ChestManager.ChestControlDirectory))
-                Directory.CreateDirectory(ChestManager.ChestControlDirectory);
         }
 
         protected override void Dispose(bool disposing)
         {
+            GameHooks.Initialize -= OnInitialize;
             NetHooks.GetData -= NetHooks_GetData;
             ServerHooks.Leave -= ServerHooks_Leave;
             GameHooks.Update -= OnUpdate;
@@ -61,11 +63,19 @@ namespace ChestControl
             base.Dispose(disposing);
         }
 
+
+        public void OnInitialize()
+        {
+          Log.Initialize( ChestLogPath, false );
+          chestDbManager = new ChestDbManager( TShock.DB );
+        }
+
+
         private void OnSaveWorld(bool resettime, HandledEventArgs e)
         {
             try
             {
-                ChestManager.Save(); //save chests
+              chestDbManager.SaveChests(); //save chests
             }
             catch (Exception ex) //we don't want the world to fail to save.
             {
@@ -76,9 +86,7 @@ namespace ChestControl
         private void OnUpdate()
         {
             if (Init) return;
-            Log.Initialize(ChestManager.ChestLogPath, false);
-            Log.Write("Initiating ChestControl...", LogLevel.Info);
-            ChestManager.Load();
+            chestDbManager.LoadChests();
             Commands.Load();
             new Thread(UpdateChecker).Start();
             for (int i = 0; i < Players.Length; i++)
@@ -108,7 +116,7 @@ namespace ChestControl
                             TSPlayer tplayer = TShock.Players[e.Msg.whoAmI];
                             if (id != -1)
                             {
-                                Chest chest = ChestManager.GetChest(id);
+                                Chest chest = chestDbManager.GetChest( id );
                                 bool naggedAboutLock = false;
 
                                 switch (player.GetState())
@@ -199,7 +207,7 @@ namespace ChestControl
                                                 {
                                                     chest.Lock();
                                                     player.SendMessage(
-                                                        "This chest is now private! Use \"/cpset\" to set it public.",
+                                                        "This chest is now private! Use \"/cunset\" to set it public.",
                                                         Color.Red);
                                                 }
                                             else
@@ -324,7 +332,7 @@ namespace ChestControl
                                                 {
                                                     chest.SetRefill(false);
                                                     player.SendMessage(
-                                                        "This chest is will no longer refill with items.", Color.Red);
+                                                        "This chest will no longer refill with items.", Color.Red);
                                                 }
                                                 else
                                                 {
@@ -338,7 +346,7 @@ namespace ChestControl
                                                 chest.SetOwner(player);
                                                 chest.SetRefill(false);
 
-                                                player.SendMessage("This chest is will no longer refill with items",
+                                                player.SendMessage("This chest will no longer refill with items",
                                                     Color.Red);
                                             }
                                         else
@@ -384,7 +392,7 @@ namespace ChestControl
                                         //end player setting
                                         player.SetState(SettingState.None);
                                         break;
-                                }
+                                } // switch - (player.GetState())
 
                                 if (tplayer.Group.HasPermission("showchestinfo")) //if player should see chest info
                                     player.SendMessage(
@@ -410,7 +418,7 @@ namespace ChestControl
                             if (player.GetState() != SettingState.None)
                                 //if player is still setting something - end his setting
                                 player.SetState(SettingState.None);
-                        }
+                        } // using MemoryStream
                     break;
                 case PacketTypes.TileKill:
                 case PacketTypes.Tile:
@@ -454,7 +462,7 @@ namespace ChestControl
 
                                 if (id != -1) //if have found chest
                                 {
-                                    Chest chest = ChestManager.GetChest(id);
+                                  Chest chest = chestDbManager.GetChest( id );
                                     if (chest.HasOwner()) //if owned stop removing
                                     {
                                         if (tplayer.Group.HasPermission("removechestprotection") ||
@@ -477,7 +485,7 @@ namespace ChestControl
                             Log.Write(ex.ToString(), LogLevel.Error);
                         }
                     break;
-                case PacketTypes.ChestItem:
+                case PacketTypes.ChestItem: // this occurs when a player grabs item from or puts item into chest
                     using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
                     {
                         var reader = new BinaryReader(data);
@@ -488,9 +496,14 @@ namespace ChestControl
                         short type = reader.ReadByte();
                         if (id != -1)
                         {
-                            Chest chest = ChestManager.GetChest(id);
-                            if (chest.IsRefill())
+                            Chest chest = chestDbManager.GetChest( id );
+                            if ( chest.IsRefill() )  
+                            { /* Setting e.Handled prevents TShock / Terraria from processing this message
+                               * In this case, it causes Terraria to ignore chest interactions (takes from & adds to)
+                               */
+
                                 e.Handled = true;
+                            }
                             if (!e.Handled)
                             {
                                 var item = Main.chest[id].item[slot];
@@ -498,15 +511,24 @@ namespace ChestControl
                                 newitem.netDefaults(type);
                                 newitem.Prefix(prefix);
                                 newitem.AffixName();
-                                Log.Write(string.Format("{0}({1}) in slot {2} in chest at {3}x{4} was modified to {5}({6}) by {7}",
+                                Log.Write( string.Format( "{0}({1}) in slot {2} in chest at {3}x{4} was modified to {5}({6}) by {7}",
                                     item.name, item.stack, slot, Main.chest[id].x, Main.chest[id].y, newitem.name, stack, TShock.Players[e.Msg.whoAmI].UserAccountName),
                                     LogLevel.Info, false);
                             }
                         }
                     }
                     break;
-            }
+            } // switch
         }
+
+
+        //private void RefillChest( Chest chest, int chestId )
+        //{
+        //  //Players[playerId].SendMessage( "Refilled", Color.Green );
+        //  Main.chest[chestId].item = chest.GetRefillItems();
+        //  chest.SetRefillDelayRemaining( chest.GetRefillDelay() );  // reset delay
+        //} // ResetChest
+
 
         private void UpdateChecker()
         {

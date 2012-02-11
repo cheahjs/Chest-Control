@@ -35,4 +35,4 @@ _refillchest_ - permission for admins - can set chests to refill
 ### Todo/Ideas:
 - timed access - give player permission to open chest based on time and/or number of accesses
 - integration with TShock user system
-- use another format than txt files - use TShock DB?
+- done in 2.2.2.5: use another format than txt files - use TShock DB?

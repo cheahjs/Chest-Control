@@ -6,7 +6,7 @@ namespace ChestControl
     public class CPlayer : TSPlayer
     {
         public string PasswordForChest = "";
-        protected SettingState State = SettingState.None;
+        protected SettingState ChestState = SettingState.None;
         protected List<int> UnlockedChests = new List<int>();
 
         public CPlayer(int index)
@@ -17,12 +17,12 @@ namespace ChestControl
 
         public SettingState GetState()
         {
-            return State;
+            return ChestState;
         }
 
         public void SetState(SettingState state)
         {
-            State = state;
+            ChestState = state;
         }
 
         public void UnlockedChest(int id)
