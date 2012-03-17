@@ -14,6 +14,7 @@ namespace ChestControl
     {
         private static bool Init;
         public static CPlayer[] Players = new CPlayer[Main.maxNetPlayers];
+        public static DateTime LastSave = DateTime.UtcNow;
 
         public ChestControl(Main game)
             : base(game)
@@ -28,7 +29,7 @@ namespace ChestControl
 
         public override Version Version
         {
-            get { return new Version(2, 2, 2, 2); }
+            get { return new Version(2, 2, 2, 3); }
         }
 
         public override string Author
@@ -63,18 +64,34 @@ namespace ChestControl
 
         private void OnSaveWorld(bool resettime, HandledEventArgs e)
         {
-            try
+            //apparently this doesn't work anymore
+            /*try
             {
                 ChestManager.Save(); //save chests
             }
             catch (Exception ex) //we don't want the world to fail to save.
             {
                 Log.Write(ex.ToString(), LogLevel.Error);
-            }
+            }*/
         }
 
         private void OnUpdate()
         {
+            if ((DateTime.UtcNow - LastSave).TotalMinutes >= 5)
+            {
+                try
+                {
+                    ChestManager.Save(); //save chests
+                }
+                catch (Exception ex) //we don't want the world to fail to save.
+                {
+                    Log.Write(ex.ToString(), LogLevel.Error);
+                }
+                finally
+                {
+                    LastSave = DateTime.UtcNow;
+                }
+            }
             if (Init) return;
             Log.Initialize(ChestManager.ChestLogPath, false);
             Log.Write("Initiating ChestControl...", LogLevel.Info);
